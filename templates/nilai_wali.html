@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Nilai Raport{{pelajaran}}</title>
+        {% if lihat == "1": %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" >
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        {% endif %}
+    </head>
+    <body  style="min-height: 1300px; max-height: 1300px; margin-bottom: 0px;">
+    {% if lihat == "1": %}
+    <div class="container" style="margin: 50px auto;">
+        <div class="d-flex justify-content-end">
+            <a href="{{ url_for('wali_rekap', eval_type=eval_type, pelajaran=pelajaran, kelas=kelas)}}"  class="btn btn-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    {% endif %}
+    <div class="container kop" style="margin-top: 0px; margin-bottom: 0px;">
+        <table style="width: 100%; ">
+            <tbody id="table-kop">
+                <tr>
+                    <td id="Content-border" rowspan="3" style="width: 20%; text-align: center;">
+                        <h5>Logo</h5>
+                    </td>
+                    <td style="width: 80%; text-align: center;">
+                        <h3><b>RAPORT</b></h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">
+                        <h3><b>PENCAPAIAN KOMPETENSI PESERTA DIDIK</b></h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">
+                        {% if semester ==1:%}
+                            <h3><b>SEMESTER GANJIL TAHUN AJARAN {{tahun_ajaran}}</b></h3>
+                        {% else: %}
+                            <h3><b>SEMESTER GENAP TAHUN AJARAN {{tahun_ajaran}}</b></h3>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr />
+    </div>
+    <div class="container kop">
+        <table style="width: 100%;">
+            <tbody id="table-kop">
+                <tr>
+                    <td style="width: 20%;">
+                        <h5><b>Nama Sekolah</b></h5>
+                    </td>
+                    <td style="width: 2%;">
+                        <h5><b>:</b></h5>
+                    </td>
+                    <td style="width: 32%;">
+                        <h5><b>SMP Binar Ilmu</b></h5>
+                    </td>
+
+                    <td style="width: 23%;">
+                        <h5><b>Nama Peserta Didik</b></h5>
+                    </td>
+                    <td style="width: 2%;">
+                        <h5><b>:</b></h5>
+                    </td>
+                    <td style="width: 20%;">
+                        <h5><b>{{nilai_sel[1]}}</b></h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 20%;">
+                        <h5><b>Wali Kelas</b></h5>
+                    </td>
+                    <td style="width: 2%;">
+                        <h5><b>:</b></h5>
+                    </td>
+                    <td style="width: 32%;">
+                        <h5><b>{{nama_guru}}</b></h5>
+                    </td>
+
+                    <td style="width: 23%;">
+                        <h5><b>Kelas</b></h5>
+                    </td>
+                    <td style="width: 2%;">
+                        <h5><b></b>:</h5>
+                    </td>
+                    <td style="width: 20%;">
+                        {% if kelas == "VII" :%}
+                            <h5><b>{{kelas}} (Tujuh)</b></h5>
+                        {% elif kelas == "VIII" :%}
+                            <h5><b>{{kelas}} (Delapan)</b></h5>
+                        {% elif kelas == "IX" :%}
+                            <h5><b>{{kelas}} (Sembilan)</b></h5>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 20%;">
+                        <h5><b></b></h5>
+                    </td>
+                    <td style="width: 2%;">
+                        <h5><b></b></h5>
+                    </td>
+                    <td style="width: 32%;">
+                        <h5><b></b></h5>
+                    </td>
+
+                    <td style="width: 23%;">
+                        <h5><b>Semester</b></h5>
+                    </td>
+                    <td style="width: 2%;">
+                        <h5><b></b>:</h5>
+                    </td>
+                    <td style="width: 20%;">
+                        {% if semester == 1 :%}
+                            <h5><b>{{semester}} (Satu)</b></h5>
+                        {% elif semester == 2 :%}
+                            <h5><b>{{semester}} (Dua)</b></h5>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 1. Sikap -->
+    <div class="container" style="margin-top: 25px; margin-bottom: 25px;">
+        <table style="width: 100%;">
+            <tbody>
+                <tr>
+                    <td colspan="2" style="text-align: left;">
+                        <h4><b>Rekap Penilaian Semester</b></h4>
+                    </td>
+                </tr>
+                <tr id="Content-border" style="background-color: #DCDCDC;">
+                    <td style="width: 10%;">
+                        <h5><b>No</b></h5>
+                    </td>
+                    <td style="width: 45%;">
+                        <h5><b>Mata Pelajaran</b></h5>
+                    </td>
+                    <td style="width: 15%;">
+                        <h5><b>Sikap</b></h5>
+                    </td>
+                    <td style="width: 15%;">
+                        <h5><b>Pengetahuan</b></h5>
+                    </td>
+                    <td style="width: 15%;">
+                        <h5><b>Keterampilan</b></h5>
+                    </td>
+                </tr>
+                {% for i in range(jlh_mapel): %}
+                <tr id="Content-border" >
+                    <td>
+                        <p>{{i+1}}</p>
+                    </td>
+                    <td style="text-align: left;">
+                        <p>{{nama_mapel[i]}}</p>
+                    </td>
+                    <td>
+                        <p>{{nilai_sel[2+i*3+0]}}</p>
+                    </td>
+                    <td>
+                        <p>{{nilai_sel[2+i*3+2]}}</p>
+                    </td>
+                    <td>
+                        <p>{{nilai_sel[2+i*3+1]}}</p>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr id="Content-border">
+                    <td colspan="2" style="text-align: left;">
+                        <p><b>Rata-rata nilai</b></p>
+                    </td>
+                    <td colspan="3" >
+                        <p><b>{{nilai_sel[jlh_nilai_sel-2]}}</b></p>
+                    </td>
+                </tr>
+                <tr id="Content-border">
+                    <td colspan="2" style="text-align: left;">
+                        <p><b>Predikat</b></p>
+                    </td>
+                    <td colspan="3" >
+                        <p><b>{{nilai_sel[jlh_nilai_sel-1]}}</b></p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="container" style="margin-top: 10px; margin-bottom: 0px;">
+        <table style="width: 100%;">
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">
+                        <p>Note: predikat</p>
+                    </td>
+                </tr>
+                <tr id="Content-border">
+                        <td style="width: 20%;">
+                            <p>Amat Baik</p>
+                        </td>
+                        <td style="width: 20%;">
+                            <p>Baik</p>
+                        </td>
+                        <td style="width: 20%;">
+                            <p>Cukup</p>
+                        </td>
+                        <td style="width: 20%;">
+                            <p>Kurang</p>
+                        </td>
+                        <td style="width: 20%;">
+                            <p>Sangat Kurang</p>
+                        </td>
+                </tr>
+                <tr id="Content-border">
+                    <td>
+                        <p>80 - 100</p>
+                    </td>
+                    <td>
+                        <p>70 - 80</p>
+                    </td>
+                    <td>
+                        <p>60 - 70</p>
+                    </td>
+                    <td>
+                        <p>50 - 60</p>
+                    </td>
+                    <td>
+                        <p>0 - 50</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Komentar -->
+    <div class="container" style="margin-top: 10px; margin-bottom: 0px;">
+        <table style="width: 100%;">
+            <tbody>
+                <form action="{{ url_for('wali_rekap')}}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
+                    <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                    <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                    <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+                    <input type="hidden" id="lihat "name="lihat" value="None">
+                    <input type="hidden" id="cetak_semua"name="cetak_semua" value="0">
+                    <input type="hidden" id="nisn_siswa"name="nisn_siswa" value="{{nisn_siswa}}">
+                <tr >
+                    <td id="Content-border" style="text-align: justify;">
+                        <div class="d-flex align-items-center" style="min-height: 80px;">
+                            {% if lihat =="1" :%}
+                            <textarea id="komentar" name="komentar" rows="2" style="width:100%;min-height: 80px; min-width: 1110; max-width: 1110px;">{{komentar_siswa_sel}}</textarea>
+                            {% else: %}
+                            <p>{{komentar_siswa_sel}}</p>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% if lihat =="1" :%}
+                <tr>
+                    <td class="d-flex justify-content-end" style="width: 100%;">
+                        <button type="submit" class="btn btn-outline-primary btn-md" id="save_komentar" name="save_komentar" value="1" style="min-width: 100px;">Submit Komentar</button>
+                    </td>
+                </tr>
+                {% endif %}
+                </form>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container" style="margin-top: 25px;">
+        <div class="row" style="margin: 0px 15px;">
+            <div class="col-3">
+                <p style="margin: 0px;">Wali Kelas</p>
+            </div>
+        </div>
+    </div>
+    <div class="container" style="margin-top: 60px;">
+        <div class="row" style="margin: 0px 15px;">
+            <div class="col-3">
+                <p style="margin: 0px;"><b><u>{{nama_guru}}</u></b></p>
+            </div>
+        </div>
+    </div>
+
+    {% if lihat == "1": %}
+    <div class="container" style="margin-top: 100px; margin-bottom: 0px;" >
+        <div class="row">
+            {% if semester == 1: %}
+                <p style="margin: 0px;"><i>Raport {{eval_type}} Ganjil SMP Binar Ilmu tahun ajaran {{tahun_ajaran}}</i></p>
+            {% else: %}
+                <p style="margin: 0px;"><i>Raport {{eval_type}} Genap SMP Binar Ilmu tahun ajaran {{tahun_ajaran}}</i></p>
+            {% endif %}
+            
+        </div>
+    </div>
+    {% else: %}
+    <div class="container" style="margin-top: 50px; margin-bottom: 0px;">
+        <div class="row" style="position: absolute; top: 1255px;">
+    
+            {% if semester == 1: %}
+                <p style="margin: 0px;"><i>Raport {{eval_type}} Ganjil SMP Binar Ilmu tahun ajaran {{tahun_ajaran}}</i></p>
+            {% else: %}
+                <p style="margin: 0px;"><i>Raport {{eval_type}} Genap SMP Binar Ilmu tahun ajaran {{tahun_ajaran}}</i></p>
+            {% endif %}
+            
+        </div>
+    </div>
+    {% endif %}<br><br>
+    <div class="d-flex align-items-bottom">
+        <p style="top: 1275px;">&nbsp;</p>
+    </div>
+    </body>
+</html>

@@ -1,0 +1,136 @@
+/* Header */
+.kop h4{
+    font-size: 16px;
+}
+/* .kop td{
+    font-size: 16px;
+} */
+#table-CLO{
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+#Content-CLO td, #Content-CLO th{
+    border: 1px solid black;
+}
+#Content-CLO td{
+    text-align: left;
+}
+
+#table-kop td {
+    text-align:left; 
+    vertical-align : middle;
+}
+#table-mahasiswa th {
+    text-align:left; 
+    vertical-align : middle;
+}
+
+#table-mahasiswa input, #table-mahasiswa textarea{
+    background-color: white;
+    color: black;
+}
+
+.alert_{
+    color: red;
+}
+.custom-file-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.Label-Index{
+    background-color: white;
+    border-style: none;
+    color: black;
+    text-align:center; 
+}
+
+table, tr, th, td {
+    text-align:center; 
+    vertical-align : middle;
+    /* border: 1px solid black; */
+    /* border-collapse: collapse; */
+}
+#separate{
+    text-align:left;
+}
+#Table-border {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+#Sikap{
+    margin: auto;
+    vertical-align: middle;
+}
+#Content-border{
+    border: 1px solid black;
+    margin:auto;
+}
+#Content-border th, #Content-border td {
+    border: 1px solid black;
+    margin:auto;
+}
+p{
+    margin:0px 5px;
+}
+#table tr th{
+    vertical-align : middle;
+}
+#LIA{
+    background-color: white;
+    border-style: none;
+    color: black;
+}
+
+#logo{
+    align-items: center;
+    text-align: center;
+}
+#fakultas {
+    text-align: center;
+    align-items: center;
+    vertical-align: middle;
+}
+
+#hitung{
+    /* padding: */
+    margin: 0px 5px;
+    text-align: center;
+    align-items: center;
+    vertical-align: middle;
+}
+.no-border {
+    border: 0;
+    box-shadow: none; /* You may want to include this as bootstrap applies these styles too */
+}
+#RVS {
+    min-height: 130px;
+    min-width: max-content;
+}
+.bg-spc{
+    background-color: #EEECE0;
+}
+.deskripsi {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* home page */
+
+#header{
+    text-align: center;
+    align-items: center;
+    vertical-align: middle;
+    border-radius: 1px;
+    border: solid;
+}
+
+hr {
+    position: relative;
+    top: 20px;
+    border: none;
+    height: 8px;
+    background: black;
+    margin-bottom: 50px;
+}

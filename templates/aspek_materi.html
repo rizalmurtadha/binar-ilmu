@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Input Nilai{% endblock %}
+{% block content %}
+    <br><br><br><br>
+
+    <div class="container" id="role-select">
+        <div class="row">
+            <h5>Tuliskan Aspek Materi (Pokok Bahasan) pada form di bawah. Pisahkan materi dengan tanda semicolon (;)</h5>
+        </div>
+        <div class="row">
+            <p><b>contoh :</b> Aspek A; Aspek B; Aspek C</p>
+        </div>
+        <form action="{{ url_for('menu_input') }}" id="my-form" method="POST" enctype=multipart/form-data>
+            <input type="hidden" id="create "name="create" value="1">
+            <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+            <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+            <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+            <div class="row">
+                <div class="col-10">
+                    <textarea id="aspek_materi" name="aspek_materi" rows="2" style="width:100%;min-height: 60px;"></textarea>
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="aspek" name="aspek" value="1" style="width:100%;min-width: 10px;min-height: 60px;">Submit</button>    
+                </div>
+            </div>
+        </form>
+    </div>
+    
+{% endblock %}

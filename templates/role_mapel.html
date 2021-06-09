@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Role{% endblock %}
+{% block content %}
+    <br><br><br><br>
+    <div class="container" style="min-height: 150px;">
+        <div class="row">
+            <div class="col-3 d-flex" style="max-width: 200px;">
+                <h4>Mata Pelajaran</h4>
+            </div>
+            <div class="col-1 d-flex" style="max-width: 20px;">
+                <h4>:</h4>
+            </div>
+            <div class="col-5">
+                <h4>{{nama_mapel}}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3 d-flex" style="max-width: 200px;">
+                <h4>Kelas</h4>
+            </div>
+            <div class="col-1 d-flex" style="max-width: 20px;">
+                <h4>:</h4>
+            </div>
+            <div class="col-5">
+                <h4>{{kelas}}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="container justify-content-center" id="role-select">
+        
+        <div class="container d-flex justify-content-center">
+            
+            <form action="{{ url_for('role_mapel_menu') }}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
+                <input type="hidden" id="mapel "name="mapel" value="{{nama_mapel}}">
+                <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+                <div class="row">
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="eval_type" name="eval_type" value="PTS" style="min-width: 400px;">Input Nilai PTS</button>
+                </div>
+                <div class="row">
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="eval_type" name="eval_type" value="PAS" style="min-width: 400px;">Input Nilai PAS</button>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    
+{% endblock %}

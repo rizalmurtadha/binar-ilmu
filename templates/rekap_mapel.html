@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Role{% endblock %}
+{% block content %}
+    <br><br><br><br>
+    <div class="container" style="margin-bottom: 50px;">
+        <table class="table" id="table">
+            <thead>
+                <tr>
+                    <th style="width: 10%;">No.</th>
+                    <th style="width: 20%;">NISN</th>
+                    <th style="width: 40%; text-align: left;">Nama</th>
+                    <th style="width: 15%;"> </th>
+                    <th style="width: 15%;"> </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(jlh_list): %}
+                {% if i%2 == 0 :%}
+                <tr>
+                {% else: %}
+                <tr style="background-color: #DCDCDC">
+                {% endif %}
+                    <td style="max-height: 5px; padding: 0px; width: 10%;">{{i+1}}.</td>
+                    <td style="max-height: 5px; padding: 0px; width: 20%;">{{list_nisn[i]}}</td>
+                    <td style="max-height: 5px; padding: 0px; width: 40%; text-align: left;">{{list_siswa[i]}}</td>
+                    <form action="{{ url_for('mapel_rekap')}}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
+                        <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                        <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                        <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+                        <input type="hidden" id="aspek_materi "name="aspek_materi" value="{{aspek_materi}}">
+                        <input type="hidden" id="cetak_semua "name="cetak_semua" value="0">
+                        <input type="hidden" id="nisn_siswa "name="nisn_siswa" value="{{list_nisn[i]}}">
+                        <td style="max-height: 5px; padding: 0px; width: 15%;">
+                            <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="1" style="min-width: 100px;">Lihat</button>
+                        </td>
+                        <td style="max-height: 5px; padding: 0px; width: 15%;">
+                            <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="0" style="min-width: 100px;">Cetak</button>
+                        </td>
+                    </form>
+
+                </tr>
+                {% endfor %}
+            </tbody>    
+        </table>
+    </div>
+    <div class="container" style="margin-bottom: 50px;">
+        <div class="row">
+            <div class="col-9 d-flex justify-content-end">
+                <form action="{{ url_for('role_mapel_menu')}}" id="my-form" method="POST" enctype=multipart/form-data>
+                    <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                    <input type="hidden" id="mapel "name="mapel" value="{{pelajaran}}">
+                    <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+                    <button type="submit" class="btn btn-outline-primary btn-lg justify-content-end" id="status" name="status" value="1" style="min-width: 100px;">Reset Nilai</button>
+                </form>
+            </div>
+            <div class="col-3 d-flex justify-content-start">
+                <form action="{{ url_for('mapel_rekap')}}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
+                    <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                    <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                    <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+                    <input type="hidden" id="lihat "name="lihat" value="0">
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="cetak_semua" name="cetak_semua" value="1" style="min-width: 100px;">Cetak Semua</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+    
+{% endblock %}

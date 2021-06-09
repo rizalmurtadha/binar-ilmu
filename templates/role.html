@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Role{% endblock %}
+{% block content %}
+    <br><br><br><br>
+    <div class="container">
+        <div class="row">
+            <h3>Login Sebagai</h3>
+        </div>
+    </div>
+
+    <div class="container justify-content-center" id="role-select">
+        {% for i in range(jlh_mapel): %}
+        <div class="container d-flex justify-content-center">
+            <form action="{{ url_for('role_mapel') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data style="width: 30%;">
+                <div class="row">
+                    <input type="hidden" id="mapel "name="mapel" value="{{mapel_list[i]}}">
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="kelas" name="kelas" value="{{kelas_list[i]}}" style="min-width: 400px;">{{mapel_list[i]}} {{kelas_list[i]}}</button>
+                </div>
+            </form>
+        </div>
+        {% endfor %}
+        {% for i in range(jlh_wk): %}
+        <div class="container d-flex justify-content-center">
+            <form action="{{ url_for('role_wali') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data style="width: 30%;">   
+                <div class="row">
+                    <input type="hidden" name="mapel" value="Wali Kelas">
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="kelas" name="kelas" value="{{wali_list[i]}}" style="min-width: 400px;">Wali Kelas {{wali_list[i]}}</button>
+                </div>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    
+{% endblock %}
