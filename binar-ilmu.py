@@ -484,7 +484,7 @@ def wali_rekap():
                 css = ["static/css/bootstrap.min.css","static/style.css"]
                 ## uncomment config yang dipilih
                     # config for heroku :
-                config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+                config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
                     # config for local ver 2 :
@@ -514,7 +514,7 @@ def wali_rekap():
                 css = ["static/css/bootstrap.min.css","static/style.css"]
                 ## uncomment config yang dipilih
                     # config for heroku :
-                config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+                config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
                     # config for local ver 2 :
@@ -616,7 +616,7 @@ def mapel_rekap():
                 css = ["static/css/bootstrap.min.css","static/style.css"]
                 ## uncomment config yang dipilih
                     # config for heroku :
-                config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+                config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
                     # config for local ver 2 :
@@ -647,7 +647,7 @@ def mapel_rekap():
                 css = ["static/css/bootstrap.min.css","static/style.css"]
                 ## uncomment config yang dipilih
                     # config for heroku :
-                config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+                config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
                     # config for local ver 2 :
