@@ -67,6 +67,10 @@ table, tr, th, td {
     border: 1px solid black;
     margin:auto;
 }
+#Content-border-white{
+    border: 1px solid transparent;
+    margin:auto;
+}
 #Content-border th, #Content-border td {
     border: 1px solid black;
     margin:auto;

@@ -1,51 +1,149 @@
 {% extends "base.html" %}
 {% block title %}Rekap{% endblock %}
 {% block content %}
-    <br><br><br><br>
     <div class="container" style="margin-bottom: 50px;">
         <table class="table" id="table">
-            <thead>
-                <tr>
-                    <th style="width: 10%;">No.</th>
-                    <th style="width: 20%;">NISN</th>
-                    <th style="width: 40%; text-align: left;">Nama</th>
-                    <th style="width: 15%;"> </th>
-                    <th style="width: 15%;"> </th>
-                </tr>
-            </thead>
             <tbody>
-                {% for i in range(jlh_list): %}
-                {% if i%2 == 0 :%}
                 <tr>
-                {% else: %}
-                <tr style="background-color: #DCDCDC">
-                {% endif %}
-                    <td style="max-height: 5px; padding: 0px; width: 10%;">{{i+1}}.</td>
-                    <td style="max-height: 5px; padding: 0px; width: 20%;">{{list_nisn[i]}}</td>
-                    <td style="max-height: 5px; padding: 0px; width: 40%; text-align: left;">{{list_siswa[i]}}</td>
-                    <form action="{{ url_for('wali_rekap')}}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
-                        <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
-                        <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
-                        <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
-                        <input type="hidden" id="aspek_materi "name="aspek_materi" value="{{aspek_materi}}">
-                        <input type="hidden" id="cetak_semua "name="cetak_semua" value="0">
-                        <input type="hidden" id="nisn_siswa "name="nisn_siswa" value="{{list_nisn[i]}}">
-                        <td style="max-height: 5px; padding: 0px; width: 15%;">
-                            <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="1" style="min-width: 100px;">Lihat</button>
-                        </td>
-                        <td style="max-height: 5px; padding: 0px; width: 15%;">
-                            <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="0" style="min-width: 100px;">Cetak</button>
-                        </td>
-                    </form>
+                    <td style="width: 90%;padding: 0px;">
+                        <table class="table" id="table" >
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 10%;">No.</th>
+                                                <th style="width: 20%;">NISN</th>
+                                                <th style="width: 40%; text-align: left;">Nama</th>
+                                                <th style="width: 15%;"> </th>
+                                                <th style="width: 15%;"> </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for i in range(jlh_list): %}
+                                            {% if i%2 == 0 :%}
+                                            <tr>
+                                            {% else: %}
+                                            <tr style="background-color: #DCDCDC">
+                                            {% endif %}
+                                                <form action="{{ url_for('wali_rekap')}}" id="foo_form" method="POST" enctype=multipart/form-data style="width: 30%;">
+                                                    <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                                                    <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                                                    <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+                                                    <input type="hidden" id="aspek_materi "name="aspek_materi" value="{{aspek_materi}}">
+                                                    <input type="hidden" id="cetak_semua "name="cetak_semua" value="0">
+                                                    <input type="hidden" id="nisn_siswa "name="nisn_siswa" value="{{list_nisn[i]}}">
+                                                    <td style="max-height: 5px; padding: 0px; width: 10%;">{{i+1}}.</td>
+                                                    <td style="max-height: 5px; padding: 0px; width: 20%;">{{list_nisn[i]}}</td>
+                                                    <td style="max-height: 5px; padding: 0px; width: 40%; text-align: left;">{{list_siswa[i]}}</td>
+                                                    <td style="max-height: 5px; padding: 0px; width: 15%;">
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="1" style="min-width: 100px;">Lihat</button>
+                                                    </td>
+                                                    <td style="max-height: 5px; padding: 0px; width: 15%;">
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="0" style="min-width: 100px;">Cetak</button>
+                                                    </td>
+                                                </form>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td  colspan="4" class="">
+                                        <div class="d-flex justify-content-end">
+                                        <form action="{{ url_for('role_wali_menu')}}" id="generate" method="POST" enctype=multipart/form-data>
+                                            <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                                            <input type="hidden" id="mapel "name="mapel" value="{{pelajaran}}">
+                                            <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+                                            <button type="submit" class="btn btn-outline-primary btn-lg justify-content-end" id="generate" name="generate" value="1" style="min-width: 100px;">Generate Ulang</button>
+                                        </form>
+                                    </div>
+                                    </td>
+                                    <td colspan="1">
+                                        <div class="">
+                                        <form action="{{ url_for('wali_rekap')}}" id="cetak_semua" method="POST" enctype=multipart/form-data style="width: 30%;">
+                                            <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                                            <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                                            <input type="hidden" id="kelas"name="kelas" value="{{kelas}}">
+                                            <input type="hidden" id="lihat"name="lihat" value="0">
+                                            <button type="submit" class="btn btn-outline-primary btn-lg" id="cetak_semua" name="cetak_semua" value="1" style="min-width: 100px;">Cetak Semua</button>
+                                        </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width: 10%;padding: 0px;">
+                        <table class="table" id="table">
+                            <tr>
+                                <td>
+                                    <thead>
+                                        <tr>
+                                            <th style="height: 49.5px; padding: 0px;">
+                                                <input type="checkbox" style="width: 25px; height: 25px;" onchange="checkAll(this)" name="chk[]" />
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <form action="{{ url_for('wali_rekap')}}" id="cetak_semua" method="POST" enctype=multipart/form-data style="width: 30%;">
+                                     
+                                        {% for i in range(jlh_list): %}
+                                        {% if i%2 == 0 :%}
+                                        <tr>
+                                        {% else: %}
+                                        <tr style="background-color: #DCDCDC">
+                                        {% endif %}
+                                            <td style="max-height: 5px; padding: 0px;">
+                                                <input type="checkbox"  style="width: 25px; height: 25px;" name="chkbox[]" id="chkbox[]"  value="{{list_siswa[i]}}"/>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr>
+                                            <td class="justify-content-end">
+                                                <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
+                                                <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                                                <input type="hidden" id="kelas"name="kelas" value="{{kelas}}">
+                                                <input type="hidden" id="cetak_semua "name="cetak_semua" value="0">
+                                                <button type="submit"  class="btn btn-outline-success btn-lg" id="update_kelas" name="update_kelas" value="1" style="min-width: 100px;">Update Kelas</button>
+                                            </td>
+                                        </tr>
+                                        </form>
+                                    </tbody>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
-                {% endfor %}
-            </tbody>    
+            </tbody>
+            
+                
+                
+                            
         </table>
     </div>
-    <div class="container" style="margin-bottom: 50px;">
+
+
+
+    <!-- <th style="width: 10%;"><input type="checkbox" style="width: 25px; height: 25px;" onchange="checkAll(this)" name="chk[]" ></th> -->
+    <!-- <td style="max-height: 5px; padding: 0px; width: 10%;">
+                                            <input type="checkbox" class="foo activitiescb justify-content-center" style="width: 25px; height: 25px;" id="foo_select_{{i}}" name="chkbox[]" value="{{list_siswa[i]}}"/>
+                                        </td> -->
+    
+<!--     
+    <tr>
+        <td colspan="5" style="border: none; margin:0px; padding: 0px;"></td>
+        <td rowspan="0"  class="justify-content-end">
+            <button type="submit"  class="btn btn-outline-success btn-lg" id="update_kelas" name="update_kelas" value="1" style="min-width: 100px;">Update Kelas</button>
+        </td>
+    </tr>
+     -->
+    
+
+    <!-- <div class="container" style="margin-bottom: 50px;">
         <div class="row">
-            <div class="col-9 d-flex justify-content-end">
-                <form action="{{ url_for('role_wali_menu')}}" id="my-form" method="POST" enctype=multipart/form-data>
+            <div class="col-8 d-flex justify-content-end">
+                <form action="{{ url_for('role_wali_menu')}}" id="generate" method="POST" enctype=multipart/form-data>
                     <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
                     <input type="hidden" id="mapel "name="mapel" value="{{pelajaran}}">
                     <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
@@ -53,7 +151,7 @@
                 </form>
             </div>
             <div class="col-3 d-flex justify-content-start">
-                <form action="{{ url_for('wali_rekap')}}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
+                <form action="{{ url_for('wali_rekap')}}" id="cetak_semua" method="POST" enctype=multipart/form-data style="width: 30%;">
                     <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
                     <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
                     <input type="hidden" id="kelas"name="kelas" value="{{kelas}}">
@@ -62,8 +160,25 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> -->
     
-
+    <script type="text/javascript">
+        function checkAll(ele) {
+             var checkboxes = document.getElementsByTagName('input');
+             if (ele.checked) {
+                 for (var i = 0; i < checkboxes.length; i++) {
+                     if (checkboxes[i].type == 'checkbox' ) {
+                         checkboxes[i].checked = true;
+                     }
+                 }
+             } else {
+                 for (var i = 0; i < checkboxes.length; i++) {
+                     if (checkboxes[i].type == 'checkbox') {
+                         checkboxes[i].checked = false;
+                     }
+                 }
+             }
+         }
+       </script>
     
 {% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa{% endblock %}
+{% block content %}
+    <!-- <div class="container">
+        <div class="row">
+            <h3>Login Sebagai</h3>
+        </div>
+    </div> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="container justify-content-center" id="role-select">
+            {% for i in range(jlh_kelas): %}
+            <div class="container d-flex justify-content-center">
+                <form action="{{ url_for('data_siswa') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data style="width: 30%;">
+                    <div class="row">
+                        {% for list_kls in list_kelas %}
+                        <input type="hidden" id="list_kelas[]" name="list_kelas[]" value={{list_kls}}>
+                        {% endfor  %}
+                        <button type="submit" class="btn btn-outline-primary btn-lg" id="kelas" name="kelas" value="{{list_kelas[i]}}" style="min-width: 400px;">Kelas {{list_kelas[i]}}</button>
+                    </div>
+                </form>
+            </div>
+            &nbsp;
+            {% endfor %}
+    </div>
+    <div class="container justify-content-end" id="role-select" style="margin-top: 40px;">
+        <div class="container d-flex justify-content-end">
+            <form action="{{ url_for('tambah_siswa') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data >
+                <div class="row">
+                    <input type="hidden" id="list_kelas" name="list_kelas" value={{list_kelas}}>
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="kelas" name="kelas" value="tambah" style="min-width: 200px;">Tambah Siswa</button>
+                </div>
+            </form>
+        </div>
+        &nbsp;
+    </div>
+    
+{% endblock %}

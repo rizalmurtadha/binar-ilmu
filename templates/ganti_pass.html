@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Profil Guru{% endblock %}
+{% block content %}
+    <!-- <div class="container">
+        <div class="row">
+            <h3>Login Sebagai</h3>
+        </div>
+    </div> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('login')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="container" id="" style="width: 100%;">
+        <form action="{{ url_for('ganti_password') }}" id="my-form" method="POST" enctype=multipart/form-data>
+
+
+            <table style="text-align:center; vertical-align : middle; width: 100%;">
+                <tbody>
+                    <tr>
+                        <td style="width: 35%;"></td>
+                        <td style="width: 14%; text-align: start;">
+                            <h5>ID Guru</h5>
+                        </td>
+                        <td style="width: 1%; text-align: center; padding-left: 0px;padding-right: 0px;">
+                            <h5>:</h5>
+                        </td>
+                        <td style="width: 50%; text-align: start; padding-left: 0px;">
+                            <h5>{{id}}</h5>
+                            <input type="hidden" id="id"name="id" value="id">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 35%;"></td>
+                        <td style="width: 14%; text-align: start;">
+                            <h5>Nama</h5>
+                        </td>
+                        <td style="width: 1%; text-align: center; padding-left: 0px;padding-right: 0px;">
+                            <h5></h5>
+                        </td>
+                        <td style="width: 50%; text-align: start; padding-left: 0px;">
+                            <h5>{{nama}}</h5>
+                            <!-- <input type="text" id="nama" name="nama" value="{{nama}}"> -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 35%;"></td>
+                        <td style="width: 14%; text-align: start;">
+                            <h5>Password Lama</h5>
+                        </td>
+                        <td style="width: 1%; text-align: center; padding-left: 0px;padding-right: 0px;">
+                            <h5></h5>
+                        </td>
+                        <td style="width: 50%; text-align: start; padding-left: 0px;">
+                            <input type="text" name="pass_lama" id="pass_lama" value=""> 
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td style="width: 35%;"></td>
+                        <td style="width: 14%; text-align: start;">
+                            <h5>Password Baru</h5>
+                        </td>
+                        <td style="width: 1%; text-align: center; padding-left: 0px;padding-right: 0px;">
+                            <h5></h5>
+                        </td>
+                        <td style="width: 50%; text-align: start; padding-left: 0px;">
+                            <input type="text" name="pass_baru" id="pass_baru" value=""> 
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td style="width: 35%;"></td>
+                        <td style="width: 14%; text-align: start;">
+                            <h5>Ketik Ulang Password Baru</h5>
+                        </td>
+                        <td style="width: 1%; text-align: center; padding-left: 0px;padding-right: 0px;">
+                            <h5></h5>
+                        </td>
+                        <td style="width: 50%; text-align: start; padding-left: 0px;">
+                            <input type="text" name="pass_baru_re" id="pass_baru_re" value=""> 
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+            &nbsp;
+            <table style="text-align:center; vertical-align : middle; width: 100%;">
+                <tbody>
+                    <tr>
+                        <td colspan="3"  style="width: 80%;">
+
+                        </td>
+                        <td style="width: 20%;">
+                            <button type="submit" class="btn btn-outline-primary btn-md" id="save_edit" name="save_edit" value="1" style="width: 150px;">Submit</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    
+{% endblock %}

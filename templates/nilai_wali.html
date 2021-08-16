@@ -1,52 +1,23 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Nilai Raport{{pelajaran}}</title>
-        {% if lihat == "1": %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" >
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-        {% endif %}
-    </head>
-    <body  style="min-height: 1300px; max-height: 1300px; margin-bottom: 0px;">
+{% extends "base_raport.html" %}
+{% block title %}Nilai Raport{% endblock %}
+{% block kembali %}
     {% if lihat == "1": %}
-    <div class="container" style="margin: 50px auto;">
+    <div class="container" style="margin: 20px auto;">
         <div class="d-flex justify-content-end">
             <a href="{{ url_for('wali_rekap', eval_type=eval_type, pelajaran=pelajaran, kelas=kelas)}}"  class="btn btn-primary btn-md" style="width: 150px;" >Kembali</a>
         </div>
     </div>
     {% endif %}
-    <div class="container kop" style="margin-top: 0px; margin-bottom: 0px;">
-        <table style="width: 100%; ">
-            <tbody id="table-kop">
-                <tr>
-                    <td id="Content-border" rowspan="3" style="width: 20%; text-align: center;">
-                        <h5>Logo</h5>
-                    </td>
-                    <td style="width: 80%; text-align: center;">
-                        <h3><b>RAPORT</b></h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: center;">
-                        <h3><b>PENCAPAIAN KOMPETENSI PESERTA DIDIK</b></h3>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: center;">
-                        {% if semester ==1:%}
-                            <h3><b>SEMESTER GANJIL TAHUN AJARAN {{tahun_ajaran}}</b></h3>
-                        {% else: %}
-                            <h3><b>SEMESTER GENAP TAHUN AJARAN {{tahun_ajaran}}</b></h3>
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <hr />
-    </div>
+{% endblock %}
+{% block content %}
+    {% if lihat == "1": %}
+    <!-- <div class="container" style="margin: 50px auto;">
+        <div class="d-flex justify-content-end">
+            <a href="{{ url_for('wali_rekap', eval_type=eval_type, pelajaran=pelajaran, kelas=kelas)}}"  class="btn btn-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div> -->
+    {% endif %}
+    
     <div class="container kop">
         <table style="width: 100%;">
             <tbody id="table-kop">
@@ -133,7 +104,7 @@
             <tbody>
                 <tr>
                     <td colspan="2" style="text-align: left;">
-                        <h4><b>Rekap Penilaian Semester</b></h4>
+                        <h4><b>Rekap Penilaian Akhir Semester</b></h4>
                     </td>
                 </tr>
                 <tr id="Content-border" style="background-color: #DCDCDC;">
@@ -176,7 +147,13 @@
                     <td colspan="2" style="text-align: left;">
                         <p><b>Rata-rata nilai</b></p>
                     </td>
-                    <td colspan="3" >
+                    <td  >
+                        <p><b>{{nilai_sel[jlh_nilai_sel-6]}}</b></p>
+                    </td>
+                    <td  >
+                        <p><b>{{nilai_sel[jlh_nilai_sel-4]}}</b></p>
+                    </td>
+                    <td  >
                         <p><b>{{nilai_sel[jlh_nilai_sel-2]}}</b></p>
                     </td>
                 </tr>
@@ -184,7 +161,13 @@
                     <td colspan="2" style="text-align: left;">
                         <p><b>Predikat</b></p>
                     </td>
-                    <td colspan="3" >
+                    <td  >
+                        <p><b>{{nilai_sel[jlh_nilai_sel-5]}}</b></p>
+                    </td>
+                    <td  >
+                        <p><b>{{nilai_sel[jlh_nilai_sel-3]}}</b></p>
+                    </td>
+                    <td  >
                         <p><b>{{nilai_sel[jlh_nilai_sel-1]}}</b></p>
                     </td>
                 </tr>
@@ -264,7 +247,7 @@
                 {% if lihat =="1" :%}
                 <tr>
                     <td class="d-flex justify-content-end" style="width: 100%;">
-                        <button type="submit" class="btn btn-outline-primary btn-md" id="save_komentar" name="save_komentar" value="1" style="min-width: 100px;">Submit Komentar</button>
+                        <button type="submit" class="btn btn-outline-primary btn-md" id="save_komentar" name="save_komentar" value="1" style="min-width: 100px;">Submit Catatan</button>
                     </td>
                 </tr>
                 {% endif %}
@@ -282,7 +265,7 @@
     </div>
     <div class="container" style="margin-top: 60px;">
         <div class="row" style="margin: 0px 15px;">
-            <div class="col-3">
+            <div class="col-6">
                 <p style="margin: 0px;"><b><u>{{nama_guru}}</u></b></p>
             </div>
         </div>
@@ -292,12 +275,16 @@
     <div class="container" style="margin-top: 100px; margin-bottom: 0px;" >
         <div class="row">
             {% if semester == 1: %}
-                <p style="margin: 0px;"><i>Raport {{eval_type}} Ganjil SMP Binar Ilmu tahun ajaran {{tahun_ajaran}}</i></p>
+                <p style="margin: 0px;"><i>Raport {{eval_type}} Ganjil SMPT Binar Ilmu Tahun Pelajaran {{tahun_ajaran}}</i></p>
             {% else: %}
-                <p style="margin: 0px;"><i>Raport {{eval_type}} Genap SMP Binar Ilmu tahun ajaran {{tahun_ajaran}}</i></p>
+                <p style="margin: 0px;"><i>Raport {{eval_type}} Genap SMPT Binar Ilmu Tahun Pelajaran {{tahun_ajaran}}</i></p>
             {% endif %}
             
         </div>
+    </div>
+    <br><br>
+    <div class="d-flex align-items-bottom">
+        <p style="top: 1275px;">&nbsp;</p>
     </div>
     {% else: %}
     <div class="container" style="margin-top: 50px; margin-bottom: 0px;">
@@ -311,9 +298,5 @@
             
         </div>
     </div>
-    {% endif %}<br><br>
-    <div class="d-flex align-items-bottom">
-        <p style="top: 1275px;">&nbsp;</p>
-    </div>
-    </body>
-</html>
+    {% endif %}
+{% endblock %}

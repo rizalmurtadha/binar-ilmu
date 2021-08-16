@@ -23,6 +23,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 path_nilai = os.path.join(APP_ROOT, 'nilai/')
+path_nilai = os.path.join(APP_ROOT, 'tmp/')
 
 def stream_dropbox_file(path):
     _,res = dbx.files_download(path)
@@ -58,17 +59,40 @@ def check_folder(eval_type):
     except:
         dbx.files_create_folder("/nilai/{}/{}".format(folder_name_1, eval_type))
 
-def check_predikat(avg):
-    if avg >= 80:
-        predikat = "Amat Baik"
-    elif avg >= 70:
-        predikat = "Baik"
-    elif avg >= 60:
-        predikat = "Cukup"
-    elif avg >= 50:
-        predikat = "Kurang"
+# update kelas
+def update_kelas(nm, kls, list_nm):
+    if nm in list_nm:
+        if kls == "VII":
+            new_kls = "VIII"
+        elif kls == "VIII":
+            new_kls = "IX"
+        else:
+            new_kls = "Alumni"
     else:
-        predikat = "Sangat Kurang"
+        new_kls = kls
+    return new_kls
+
+def check_predikat(avg, sikap=False):
+    if sikap==False:
+        if avg >= 80:
+            predikat = "Amat Baik"
+        elif avg >= 70:
+            predikat = "Baik"
+        elif avg >= 60:
+            predikat = "Cukup"
+        elif avg >= 50:
+            predikat = "Kurang"
+        else:
+            predikat = "Sangat Kurang"
+    else:
+        if avg == 1:
+            predikat = "Kurang"
+        elif avg == 2:
+            predikat = "Cukup"
+        elif avg == 3:
+            predikat = "Baik"
+        else:
+            predikat = "Sangat Baik"
     return predikat
 
 # 1. Halaman login
@@ -79,7 +103,10 @@ dbx = dropbox.Dropbox(token)
 @app.route("/",methods=["GET", "POST"])
 def login():
     if "user" in session:
-        return redirect(url_for("role"))
+        if session["user"] == 100:
+            return redirect(url_for("admin"))
+        else:
+            return redirect(url_for("role"))
     else:
         if request.method=="POST":
             try:
@@ -87,18 +114,26 @@ def login():
             except:
                 Login = "0"
             if(Login=="1"):
+                # verifikasi akun
+                # misal input id_guru di-assign sebagai variable "id_guru"
+                try:
+                    id_guru = int(request.form['id_guru'])
+                except:
+                    return render_template("login.html",message="pwdSalah")
+                # misal input password di-assign sebagai variable "input_passwd"
+                input_passwd = request.form['password']
+                if id_guru == 100 and input_passwd=="adminsmpbinarilmu":
+                    session["nama_user"] = "Admin"
+                    session["user"] = id_guru
+                    return redirect(url_for("admin"))
+
                 # load data guru
                 file_stream=stream_dropbox_file("/data_guru.xlsx")
                 data_guru = pd.read_excel(file_stream)
                 # dbx.files_download_to_file("./tmp/data_guru.xlsx", "/data_guru.xlsx")
                 # data_guru = pd.read_excel("./tmp/data_guru.xlsx")
-                # verifikasi akun
-                # misal input id_guru di-assign sebagai variable "id_guru"
-                id_guru = int(request.form['id_guru'])
-                # misal input password di-assign sebagai variable "input_passwd"
-                input_passwd = request.form['password']
-                list_ID_guru = data_guru.loc[:, "ID Guru"].tolist()
 
+                list_ID_guru = data_guru.loc[:, "ID Guru"].tolist()
                 if id_guru not in list_ID_guru:
                     # print("ID guru tidak terdaftar")
                     return render_template("login.html",message="error")
@@ -117,7 +152,305 @@ def login():
 
         return render_template("login.html")
 
+@app.route("/admin",methods=["GET", "POST"])
+def admin():
+    if session["user"] == 100:
+        if request.method=="POST":
+            pilihan = request.form['pilihan']
+            return redirect(url_for(pilihan))
+        return render_template("admin.html")
+    else:
+        return redirect(url_for("login"))
 
+@app.route("/admin/data-siswa",methods=["GET", "POST"])
+def data_siswa():
+    if session["user"] == 100:
+        if request.method=="POST":
+            kelas = request.form['kelas']
+            list_kelas = request.form.getlist('list_kelas[]')
+            if kelas == "tambah":
+                return kelas
+            else:
+                # 10 Halaman Kelas
+                # kelas = "VII" #Input
+                # load data siswa
+                file_stream=stream_dropbox_file("/data_siswa.xlsx")
+                data_siswa = pd.read_excel(file_stream)
+                data_kelas = data_siswa[data_siswa["Kelas"] == kelas] 
+                list_nisn = data_kelas["NISN"].tolist()
+                list_siswa = data_kelas["Nama"].tolist()
+                list_kelas_siswa = data_kelas["Kelas"].tolist()
+
+                # return str(list_kelas)
+                return render_template("hal_kelas.html",kelas=kelas,list_kelas=list_kelas, list_nisn=list_nisn, jlh_list=len(list_nisn),
+                                        list_siswa=list_siswa, list_kelas_siswa=list_kelas_siswa)
+        # 9 Halaman Data Siswa
+        # load data siswa
+        file_stream=stream_dropbox_file("/data_siswa.xlsx")
+        data_siswa = pd.read_excel(file_stream)
+        list_kelas = data_siswa["Kelas"].unique()
+        list_kelas = list(list_kelas)
+        # for kelas in list_kelas:
+        #     print("Kelas {}".format(kelas))
+        return render_template("data_siswa.html",list_kelas=list_kelas,jlh_kelas=len(list_kelas))
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/admin/data-siswa/edit",methods=["GET", "POST"])
+def edit_siswa():
+    if session["user"] == 100:
+        if request.method=="POST":
+            try:
+                save_edit = request.form["save_edit"]
+            except:
+                save_edit = "0"
+            try:
+                dropout = request.form["dropout"]
+            except:
+                dropout = "0"
+            kelas_edit = request.form["kelas_siswa"]
+            nisn_edit = int(request.form["nisn_siswa"])
+            nama_edit = request.form["nama_siswa"]
+            list_kelas = request.form.getlist('list_kelas[]')
+            kelas = request.form['kelas']
+
+            file_stream=stream_dropbox_file("/data_siswa.xlsx")
+            data_siswa = pd.read_excel(file_stream)
+            # nisn = 72100585
+            # nama = "Agus Ahmad"  # <from input>
+            # kelas = "VII"    # <from input>
+            data_siswa.set_index("NISN", inplace=True)
+
+            if save_edit=="1":
+                # return nisn_edit
+                # return str(kelas_edit+" "+nama_edit)
+                # Tombol Edit
+                data_siswa.loc[nisn_edit, "Nama"] = nama_edit
+                data_siswa.loc[nisn_edit, "Kelas"] = kelas_edit
+                data_siswa.reset_index(inplace=True)
+                
+
+                data_siswa.to_excel("./data/data_siswa.xlsx", index=None)
+                with open("./data/data_siswa.xlsx", 'rb') as f:
+                    dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                return redirect(url_for("data_siswa"))
+            elif dropout =="1":
+                # return "DO"
+                # Tombol Dropout
+                data_siswa.loc[nisn_edit, "Kelas"] = "Dropout"
+                data_siswa.reset_index(inplace=True)
+
+                data_siswa.to_excel("./data/data_siswa.xlsx", index=None)
+                with open("./data/data_siswa.xlsx", 'rb') as f:
+                    dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                return redirect(url_for("data_siswa"))
+        return render_template("edit_siswa.html",kelas=kelas,list_kelas=list_kelas, nisn_edit=nisn_edit, 
+                                        nama_edit=nama_edit, kelas_edit=kelas_edit)
+
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/admin/data-siswa/tambah",methods=["GET", "POST"])
+def tambah_siswa():
+    if session["user"] == 100:
+        if request.method == "POST":
+            # 12 Halaman Tambah Siswa
+            # Unduh
+            # sent ./data/data_siswa_template.xlsx to user
+
+            kelas = request.form["kelas"]
+            try:
+                tambah = request.form["unggah"]
+                if tambah =="1":
+                    file = request.files["file"]
+                    excel_name = file.filename
+                    file_destination = "/".join([path_nilai,excel_name])
+                    file.save(file_destination)
+            
+                    # Unggah
+                    # uploaded file is located at ./tmp/data_siswa_template.xlsx to
+                    new_data = pd.read_excel(file_destination)
+                    file_stream=stream_dropbox_file("/data_siswa.xlsx")
+                    data_siswa = pd.read_excel(file_stream)
+                    data_siswa = pd.concat([data_siswa, new_data], axis=0)
+
+                    data_siswa.to_excel("./data/data_siswa.xlsx", index=None)
+                    # return redirect(url_for("data_siswa"))
+                    # return "gg"
+                    with open("./data/data_siswa.xlsx", 'rb') as f:
+                    # with open("./data/data_siswas_hasil.xlsx", 'rb') as f:    # untuk reset data
+                        dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                    return redirect(url_for("data_siswa"))
+            except:
+                return render_template("tambah_siswa.html")
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/admin/data-guru",methods=["GET", "POST"])
+def data_guru():
+    if session["user"] == 100:
+        if request.method=="POST":
+            pilihan = request.form['pilihan']
+            return pilihan
+            return render_template("role_mapel.html", nama_mapel=nama_mapel, kelas=kelas)
+        # 13 Halaman Data Guru
+        # load data guru
+        file_stream=stream_dropbox_file("/data_guru.xlsx")
+        data_guru = pd.read_excel(file_stream)
+        # data_guru.to_excel("./data/data_guru.xlsx", index=None)
+        # data_guru.head()
+        list_id = data_guru["ID Guru"].tolist()
+        list_nama = data_guru["Nama"].tolist()
+        list_password = data_guru["Password"].tolist()
+
+        return render_template("data_guru.html", jlh_list=len(list_id), list_id=list_id,
+                                    list_nama=list_nama, list_password=list_password)
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/admin/data-guru/edit",methods=["GET", "POST"])
+def edit_guru():
+    if session["user"] == 100:
+        if request.method=="POST":
+            try:
+                save_edit = request.form["save_edit"]
+            except:
+                save_edit = "0"
+
+            id_sel = int(request.form["id_sel"])
+            nama_sel = request.form["nama_sel"]
+            pass_sel = request.form["pass_sel"]
+
+            if save_edit=="1":
+                # return str(nama_sel+" "+pass_sel)
+                # 14 Halaman Edit Data Guru
+                # load data guru
+                file_stream=stream_dropbox_file("/data_guru.xlsx")
+                data_guru = pd.read_excel(file_stream)
+
+                # id_guru = 101
+                # nama = "Wahyu Mediana"  # <from input>
+                # password = "smpbinarilmu" # <from input>
+
+                data_guru.set_index("ID Guru", inplace=True)
+                data_guru.loc[id_sel, "Nama"] = nama_sel
+                data_guru.loc[id_sel, "Password"] = pass_sel
+                data_guru.reset_index(inplace=True)
+
+                data_guru.to_excel("./data/data_guru.xlsx", index=None)
+                with open("./data/data_guru.xlsx", 'rb') as f:
+                    dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                return redirect(url_for("data_guru")) 
+            return render_template("edit_guru.html", id_sel=id_sel, 
+                                        nama_sel=nama_sel, pass_sel=pass_sel)
+
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/admin/data-guru/tambah",methods=["GET", "POST"])
+def tambah_guru():
+    if session["user"] == 100:
+        if request.method == "POST":
+            pass
+            try:
+                tambah = request.form["tambah"]
+                name = request.form["nama"]
+
+            except:
+                tambah = "0"
+            # 15 Halaman Tambah Data Guru
+            # load data guru
+            file_stream=stream_dropbox_file("/data_guru.xlsx")
+            data_guru = pd.read_excel(file_stream)
+            id_now = data_guru["ID Guru"].tolist()[-1] + 1
+            # name = "Isman Kurniawan"   # <from input>
+            if tambah == "1":
+                data_guru = data_guru.append({'ID Guru': id_now, 'Nama': name, 'Password': 'smpbinarilmu'}, ignore_index=True)
+                data_guru.to_excel("./data/data_guru.xlsx", index=None)
+                with open("./data/data_guru.xlsx", 'rb') as f:
+                    dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                return redirect(url_for("data_guru"))
+            return render_template("tambah_guru.html",id_now=id_now)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/admin/plotting-pengajaran",methods=["GET", "POST"])
+def plot_pengajaran():
+    if session["user"] == 100:
+
+        # 16 Halaman Plotting Pengajaran
+        # load guru mapel
+        file_stream=stream_dropbox_file("/guru_mapel.xlsx")
+        guru_mapel = pd.read_excel(file_stream)
+        # buat cek data
+        # guru_mapel.to_excel("./data/guru_mapel.xlsx", index=None)
+        # return "GG"
+        list_mapel = guru_mapel["Mata Pelajaran"].tolist()
+        list_kelasVII = guru_mapel["VII"].tolist()
+        list_kelasVIII = guru_mapel["VIII"].tolist()
+        list_kelasIX = guru_mapel["IX"].tolist()
+
+        if request.method=="POST":
+            list_VII_baru = request.form.getlist('list_kelasVII[]')
+            list_VIII_baru = request.form.getlist('list_kelasVIII[]')
+            list_IX_baru = request.form.getlist('list_kelasIX[]')
+            newData = pd.DataFrame(list(zip(list_mapel, list_VII_baru,list_VIII_baru,list_IX_baru)),
+               columns =['Mata Pelajaran', 'VII', 'VIII', 'IX'])
+
+            newData.to_excel("./data/guru_mapel.xlsx", index=None)
+            # update guru_mapel.xlsx according to the input
+            # guru_mapel.to_excel("./data/guru_mapel.xlsx", index=None)
+            with open("./data/guru_mapel.xlsx", 'rb') as f:
+                dbx.files_upload(f.read(), "/guru_mapel.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            return redirect(url_for("plot_pengajaran"))
+        # get list guru
+        # load data guru
+        file_stream=stream_dropbox_file("/data_guru.xlsx")
+        data_guru = pd.read_excel(file_stream)
+        list_guru = data_guru["Nama"].tolist()
+
+        
+
+        return render_template("plot_pengajaran.html",list_mapel=list_mapel,jlh_list=len(list_mapel),list_guru=list_guru,
+                                   list_kelasVII=list_kelasVII, list_kelasVIII=list_kelasVIII,list_kelasIX=list_kelasIX,jlh_guru=len(list_guru))
+    else:
+        return redirect(url_for("login"))
+
+@app.route("/ganti-pass",methods=["GET", "POST"])
+def ganti_password():
+    if "user" in session:
+        if request.method=="POST":
+
+            # ganti password
+            # load data guru
+            file_stream=stream_dropbox_file("/data_guru.xlsx")
+            data_guru = pd.read_excel(file_stream)
+            id_guru = session["user"]  # 106 # <from input>
+            # input
+            passwd_lama = request.form["pass_lama"] #"smpbinarilmu"
+            passwd_baru = request.form["pass_baru"] #"mypassword"
+            passwd_retype = request.form["pass_baru_re"] #"mypassword"
+
+            data_guru.set_index("ID Guru", inplace=True)
+
+            passwd_prev = data_guru.loc[id_guru, "Password"]
+
+            if passwd_lama != passwd_prev:
+                print("Password sebelumnya salah")
+            elif passwd_baru != passwd_retype:
+                print("Password baru tidak konsisten")
+            else:
+                # update password lama
+                data_guru.loc[id_guru, "Password"] = passwd_baru
+            data_guru.reset_index(inplace=True)   
+            data_guru.to_excel("./data/data_guru.xlsx", index=None)
+            with open("./data/data_guru.xlsx", 'rb') as f:
+                dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            return redirect(url_for("role"))
+        return render_template("ganti_pass.html", id=session["user"],nama=session["nama_user"])
+    else:
+        return redirect(url_for("login"))
 @app.route("/role",methods=["GET", "POST"])
 def role():
     if "user" in session:
@@ -252,11 +585,38 @@ def role_wali_menu():
                         # load file name
                         file_stream=stream_dropbox_file("/nilai/{}/{}/{}.xlsx".format(folder_name_1, eval_type, file_name))
                         form_nilai_mapel = pd.read_excel(file_stream)
-                        for aspek in ["Sikap", "Keterampilan", "Pengetahuan"]:
-                            form_nilai["{}_{}".format(mpl, aspek)] = form_nilai_mapel[aspek].values
-                form_nilai["Rata_rata"] = form_nilai.iloc[:,1:].mean(axis=1).values
-                form_nilai["Predikat"] = form_nilai["Rata_rata"].apply(lambda x: check_predikat(x))
-                # file_rekap_nilai = "Rekap_Nilai_{}.xlsx".format(kelas)
+                        nilai_sikap = form_nilai_mapel["Spiritual_Predikat"] + form_nilai_mapel["Sosial_Predikat"]
+                        tmp = round(nilai_sikap/2,0)
+                        form_nilai["{}_Sikap".format(mpl)] = tmp
+                        form_nilai["{}_Pengetahuan".format(mpl)] = form_nilai_mapel["Nilai Akhir Pengetahuan"].values
+                        form_nilai["{}_Keterampilan".format(mpl)] = form_nilai_mapel["Nilai Akhir Keterampilan"].values
+                aspek_dict = {}; pred_dict = {}
+                for i in ["Sikap", "Pengetahuan", "Keterampilan"]:
+                    aspek_dict[i] = []
+                    pred_dict[i] = []
+                for j in range(form_nilai.shape[0]):
+                    for i in ["Sikap", "Pengetahuan", "Keterampilan"]:
+                        tmp = []
+                        for mpl in mapel:
+                            nilai = form_nilai.loc[j, "{}_{}".format(mpl, i)]
+                            if type(nilai) != str:
+                                tmp.append(nilai)
+                        tmp = np.average(tmp)
+                        if i == "Sikap":
+                            sikap = True
+                            tmp = round(tmp,0)
+                        else:
+                            sikap = False
+                        aspek_dict[i].append(tmp)
+                        pred_dict[i].append(check_predikat(tmp, sikap=sikap))
+                for i in ["Sikap", "Pengetahuan", "Keterampilan"]:
+                    form_nilai["{}_Avg".format(i)] = aspek_dict[i]
+                    form_nilai["{}_Pred".format(i)] = pred_dict[i]
+            #             for aspek in ["Sikap", "Keterampilan", "Pengetahuan"]:
+            #                 form_nilai["{}_{}".format(mpl, aspek)] = form_nilai_mapel[aspek].values
+            #     form_nilai["Rata_rata"] = form_nilai.iloc[:,1:].mean(axis=1).values
+            #     form_nilai["Predikat"] = form_nilai["Rata_rata"].apply(lambda x: check_predikat(x))
+
                 form_nilai.to_excel("./nilai/Rekap_Nilai_{}.xlsx".format(kelas))
                 with open("./nilai/Rekap_Nilai_{}.xlsx".format(kelas), 'rb') as f:
                     dbx.files_upload(f.read(), "/nilai/{}/{}/Rekap_Nilai_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
@@ -267,11 +627,9 @@ def role_wali_menu():
                     dbx.files_get_metadata("/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas))
                 except:
                     komentar = 1
-
                 if komentar:
                     form_komentar = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
                     form_komentar["Komentar"] = ""
-                    # file_komentar ="Komentar_{}.xlsx".format(kelas) 
                     form_komentar.to_excel("./nilai/Komentar_{}.xlsx".format(kelas), index=None)
                     with open("./nilai/Komentar_{}.xlsx".format(kelas), 'rb') as f:
                         dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
@@ -343,7 +701,7 @@ def menu_input():
                 create = "0"
 
             if create =="1":
-                save_template_form_nilai(pelajaran, kelas, aspek_materi)
+                save_template_form_nilai(pelajaran, kelas, aspek_materi,eval_type)
                 create = "0"
             
             try:
@@ -374,11 +732,13 @@ def wali_rekap():
             nisn_siswa = None
             save_komentar ="0"
         cetak_semua = "0"
+        update = "0"
         lihat = None
         if request.method=="POST":
             eval_type = request.form['eval_type']   #"PTS" 
             pelajaran = request.form['pelajaran']   #"Matematika"
             kelas = request.form['kelas']       #"VII"
+            # cek save komentar
             try:
                 save_komentar = request.form['save_komentar']
             except:
@@ -388,10 +748,20 @@ def wali_rekap():
                 lihat = request.form['lihat']
                 nisn_siswa = int(request.form['nisn_siswa']) # 72100585 obtained from previous step
             except:
-                lihat="0"
+                # lihat="0"
                 nisn_siswa = None
+            try:
+                update = request.form['update_kelas']
+            except:
+                update = "0"
+            # checkbox
+            try:
+                checked_siswa = request.form.getlist('chkbox[]')
+            except:
+                checked_siswa = []
             # Tombol Cetak Semua
             cetak_semua = request.form['cetak_semua']
+            
 
         # tampilan rekap per siswa
         tahun_ajaran, semester, folder_name_1 = check_period()
@@ -409,7 +779,22 @@ def wali_rekap():
         form_komentar.set_index("NISN", inplace=True)
         # show the list of siswa
         
-
+        if update == "1":
+            # return str(checked_siswa)
+            # update kelas
+            file_stream=stream_dropbox_file("/data_siswa.xlsx")
+            data_siswa = pd.read_excel(file_stream)
+            # checked_siswa = ["Agus Ahmad", "Ajat Wahyudin"]
+            for i in range(data_siswa.shape[0]):
+                nm = data_siswa.loc[i,"Nama"]
+                kls = data_siswa.loc[i,"Kelas"]
+                new_kls = update_kelas(nm, kls, checked_siswa)
+                data_siswa.loc[i,"Kelas"] = new_kls
+            # data_siswa.to_excel("./data/data_siswa_updated.xlsx", index=None)
+            # with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
+            #     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            return redirect(url_for("role"))
+    
         if save_komentar=="1":
             # update Submit Komentar
             komentar = request.form['komentar']     # "Progres siswa sudah baik" # obtained from text box
@@ -429,8 +814,10 @@ def wali_rekap():
                 komentar_siswa_sel = ""
             nilai_sel = []
             nama_mapel = []
+            # nilai_siswa_sel.to_excel("outs.xlsx")
+            # return str((nilai_siswa_sel.shape))
             for i in range(nilai_siswa_sel.shape[1]):
-                if i > 2 and i < nilai_siswa_sel.shape[1]-3 and i%3==0 :
+                if i > 2 and i < nilai_siswa_sel.shape[1]-6 and i%3==0 :
                     nama_mapel.append(form_nilai.columns[i].replace("_Keterampilan",""))
             for i in range(nilai_siswa_sel.shape[1]):
                 if i > 1 and i < nilai_siswa_sel.shape[1]-1 :
@@ -443,8 +830,8 @@ def wali_rekap():
                             nilai_sel.append("{}".format(nilai_siswa_sel.iloc[0,i]))
                 else:
                     nilai_sel.append(nilai_siswa_sel.iloc[0,i])
-            
-            jlh_mapel = int((len(nilai_sel)-4)/3)
+            # return str(nama_mapel)
+            jlh_mapel = int((len(nama_mapel)))
             html= render_template("nilai_wali.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=nisn_siswa,
                                         pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,
                                         eval_type=eval_type, nama_guru=session['nama_user'],jlh_mapel=jlh_mapel,jlh_nilai_sel=len(nilai_sel))
@@ -461,7 +848,7 @@ def wali_rekap():
                 nilai_sel = []
                 nama_mapel = []
                 for i in range(nilai_siswa_sel.shape[1]):
-                    if i > 2 and i < nilai_siswa_sel.shape[1]-3 and i%3==0 :
+                    if i > 2 and i < nilai_siswa_sel.shape[1]-6 and i%3==0 :
                         nama_mapel.append(form_nilai.columns[i].replace("_Keterampilan",""))
                 for i in range(nilai_siswa_sel.shape[1]):
                     if i > 1 and i < nilai_siswa_sel.shape[1]-1 :
@@ -475,7 +862,7 @@ def wali_rekap():
                     else:
                         nilai_sel.append(nilai_siswa_sel.iloc[0,i])
                 
-                jlh_mapel = int((len(nilai_sel)-4)/3)
+                jlh_mapel = int((len(nama_mapel)))
                 html= render_template("nilai_wali.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=list_nisn[siswa],
                                             pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,
                                             eval_type=eval_type, nama_guru=session['nama_user'],jlh_mapel=jlh_mapel,jlh_nilai_sel=len(nilai_sel))
@@ -485,9 +872,9 @@ def wali_rekap():
                 ## uncomment config yang dipilih
                     # config for heroku :
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
-                    # config for local ver 1 :
+                    # config for local :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
-                    # config for local ver 2 :
+                    # config for local windows :
                 # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
@@ -517,8 +904,8 @@ def wali_rekap():
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
-                    # config for local ver 2 :
-                path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
+                    # config for local Windows :
+                # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
                 pdf = pdfkit.from_string(html, False,configuration=config, css=css)
@@ -549,6 +936,7 @@ def mapel_rekap():
             pelajaran=request.args.get('pelajaran')
             kelas=request.args.get('kelas')
             nisn_siswa = None
+            save_komentar ="0"
             # aspek_materi=request.args.get('aspek_materi')
         cetak_semua = "0"
         lihat = None
@@ -556,11 +944,17 @@ def mapel_rekap():
             eval_type = request.form['eval_type']   #"PTS" 
             pelajaran = request.form['pelajaran']   #"Matematika"
             kelas = request.form['kelas']       #"VII"
+            # cek save komentar
+            try:
+                save_komentar = request.form['save_komentar']
+            except:
+                save_komentar="0"
             # Tombol Lihat
             try:
                 lihat = request.form['lihat']
                 nisn_siswa = int(request.form['nisn_siswa']) # ex:72100585  obtained from previous step
             except:
+                lihat="0"
                 nisn_siswa = None
             # Tombol Cetak Semua
             cetak_semua = request.form['cetak_semua']
@@ -574,23 +968,45 @@ def mapel_rekap():
         # show the list of siswa
         list_nisn = nilai_siswa["NISN"].tolist()
         list_siswa = nilai_siswa["Nama"].tolist()
+        # load form komentar
+        file_stream=stream_dropbox_file("/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+        form_komentar = pd.read_excel(file_stream)
+        form_komentar.set_index("NISN", inplace=True)
 
-        if nisn_siswa != None and cetak_semua !="1":
+        if save_komentar=="1":
+            # update Submit Komentar
+            komentar = request.form['komentar']     # "Progres siswa sudah baik" # obtained from text box
+            form_komentar.loc[(nisn_siswa), "Komentar"] = komentar
+            # save komentar dataframe
+            form_komentar.reset_index(inplace=True)
+            form_komentar.to_excel("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), index=None)
+            with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
+                dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
+
+        if nisn_siswa != None and save_komentar !="1":
             # present nilai siswa
             nilai_siswa_sel = nilai_siswa[nilai_siswa["NISN"] == nisn_siswa]
             aspek_materi = list(nilai_siswa_sel)
-            batas = len(aspek_materi) - 4
+            # return str(nilai_siswa_sel)
+            # return str(nisn_siswa)
+            komentar_siswa_sel = form_komentar.loc[nisn_siswa,"Komentar"]
+            if pd.isna(komentar_siswa_sel):
+                komentar_siswa_sel = ""
+            # return str((komentar))
+            batas = len(aspek_materi) - 3
             aspek_materi = [aspek_materi[i] for i in range(6,batas) ]
+            aspek_materi = aspek_materi[0::2]
+            aspek_materi = [aspek_materi[i].replace("_Pengetahuan","") for i in range(len(aspek_materi)) ]
             nilai_sel = []
             
             for i in range(nilai_siswa_sel.shape[1]):
-                if i > 5 and i < nilai_siswa_sel.shape[1]-4 or i == nilai_siswa_sel.shape[1]-1:
+                if i > batas :
                     nilai_sel.append("{0:.2f}".format(nilai_siswa_sel.iloc[0,i]))
                 else:
                     nilai_sel.append(nilai_siswa_sel.iloc[0,i])
-
-            html= render_template("nilai_mapel.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat,
-                                        pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi,
+            # return str(nilai_sel)
+            html= render_template("nilai_mapel.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=nisn_siswa,
+                                        pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi, komentar_siswa_sel=komentar_siswa_sel,
                                         eval_type=eval_type, nama_guru=session['nama_user'],jlh_aspek=len(aspek_materi))
 
         if cetak_semua == "1":
@@ -600,16 +1016,26 @@ def mapel_rekap():
             for siswa in range(len(list_siswa)):
                 nilai_siswa_sel = nilai_siswa[nilai_siswa["NISN"] == int(list_nisn[siswa])]
                 aspek_materi = list(nilai_siswa_sel)
-                batas = len(aspek_materi) - 4
+                # return str(nilai_siswa_sel)
+                # return str(nisn_siswa)
+                komentar_siswa_sel = form_komentar.loc[(list_nisn[siswa]),"Komentar"]
+                if pd.isna(komentar_siswa_sel):
+                    komentar_siswa_sel = ""
+                # return str((komentar))
+                batas = len(aspek_materi) - 3
                 aspek_materi = [aspek_materi[i] for i in range(6,batas) ]
+                aspek_materi = aspek_materi[0::2]
+                aspek_materi = [aspek_materi[i].replace("_Pengetahuan","") for i in range(len(aspek_materi)) ]
                 nilai_sel = []
+                
                 for i in range(nilai_siswa_sel.shape[1]):
-                    if i > 5 and i < nilai_siswa_sel.shape[1]-4 or i == nilai_siswa_sel.shape[1]-1:
+                    if i > batas :
                         nilai_sel.append("{0:.2f}".format(nilai_siswa_sel.iloc[0,i]))
                     else:
                         nilai_sel.append(nilai_siswa_sel.iloc[0,i])
-                html= render_template("nilai_mapel.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat,
-                                            pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi,
+                # return str(nilai_sel)
+                html= render_template("nilai_mapel.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=nisn_siswa,
+                                            pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi, komentar_siswa_sel=komentar_siswa_sel,
                                             eval_type=eval_type, nama_guru=session['nama_user'],jlh_aspek=len(aspek_materi))
 
                 filename_pdf = "./nilai/{}_{}_{}.pdf".format(list_siswa[siswa], list_nisn[siswa], pelajaran)
@@ -619,7 +1045,7 @@ def mapel_rekap():
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
-                    # config for local ver 2 :
+                    # config for local Windows :
                 # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
@@ -650,7 +1076,7 @@ def mapel_rekap():
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
-                    # config for local ver 2 :
+                    # config for local Windows :
                 # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
@@ -690,12 +1116,31 @@ def unggah_form_nilai(file, eval_type, pelajaran, kelas):
     # uploaded file is saved in nilai
     form_nilai = pd.read_excel(file_destination)
     # update nilai Pengetahuan
-    form_nilai["Pengetahuan"] = 0
-    for i in range(form_nilai.shape[0]):
-        tmp = np.average(form_nilai.iloc[:,6:-4].values)
-        form_nilai.loc[i,"Pengetahuan"] = tmp
-    form_nilai.to_excel(file_destination, index=None)
+    # form_nilai["Pengetahuan"] = 0
+    # for i in range(form_nilai.shape[0]):
+    #     tmp = np.average(form_nilai.iloc[:,6:-4].values)
+    #     form_nilai.loc[i,"Pengetahuan"] = tmp
+    # form_nilai.to_excel(file_destination, index=None)
     # load form nilai
+    col_title = form_nilai.columns.tolist()
+    list_pengetahuan = []; list_keterampilan = []
+    for title in col_title:
+        tmp = title.split("_")
+        if len(tmp) > 1:
+            if tmp[1] == "Pengetahuan":
+                list_pengetahuan.append(title)
+            elif tmp[1] == "Keterampilan":
+                list_keterampilan.append(title)
+    nilai_pengetahuan = form_nilai[list_pengetahuan]
+    nilai_pengetahuan["Harian_Avg"] =  nilai_pengetahuan.iloc[:,:-1].mean(axis=1)
+    tmp = nilai_pengetahuan.iloc[:,-1]*.75 + nilai_pengetahuan.iloc[:,-2]*.25
+    form_nilai["Nilai Akhir Pengetahuan"] = tmp
+    nilai_keterampilan = form_nilai[list_keterampilan]
+    nilai_keterampilan["Harian_Avg"] =  nilai_keterampilan.mean(axis=1)
+    form_nilai["Nilai Akhir Keterampilan"] = nilai_keterampilan["Harian_Avg"]
+
+    form_nilai.to_excel(file_destination, index=None)
+
     tahun_ajaran, semester, folder_name_1 = check_period()
     with open(file_destination, 'rb') as f:
         dbx.files_upload(f.read(), "/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
@@ -709,7 +1154,13 @@ def unggah_form_nilai(file, eval_type, pelajaran, kelas):
     with open("./tmp/status_nilai.xlsx", 'rb') as f:
         dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
 
-def save_template_form_nilai(pelajaran, kelas, aspek_materi):
+    # copy list guru mapel
+    try:
+        dbx.files_get_metadata("/nilai/{}/{}/guru_mapel.xlsx".format(folder_name_1, eval_type))
+    except:
+        dbx.files_copy("/guru_mapel.xlsx", "/nilai/{}/{}/guru_mapel.xlsx".format(folder_name_1, eval_type))
+
+def save_template_form_nilai(pelajaran, kelas, aspek_materi, eval_type):
     # 5. Unduh dan unggah form nilai
     # load data siswa
     file_stream=stream_dropbox_file("/data_siswa.xlsx")
@@ -717,17 +1168,43 @@ def save_template_form_nilai(pelajaran, kelas, aspek_materi):
     # define aspek penilaian
     aspek_lain = ["Spiritual_Predikat", "Spiritual_Deskripsi", "Sosial_Predikat", "Sosial_Deskripsi"]
     aspek_materi = aspek_materi.split(";")
+    tmp = aspek_materi[:]
+    aspek_materi = []
+    for materi in tmp:
+        materi = materi.split(" ")
+        if "" in materi:
+            materi.remove("")
+        materi = ' '.join(materi)
+        aspek_materi.append(materi)
+    # aspek_materi.extend([eval_type, "Nilai Akhir"])
     # Unduh form nilai
     # create dataframe of form penilaian
     form_nilai = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
     for aspek in aspek_lain:
         form_nilai[aspek] = ""
     for aspek in aspek_materi:
-        form_nilai[aspek] = ""
-    for aspek in ["Sikap", "Keterampilan", "Komentar"]:
-        form_nilai[aspek] = ""
+        for i in ["Pengetahuan", "Keterampilan"]:        
+            form_nilai["{}_{}".format(aspek, i)] = ""
+    form_nilai["{}_Pengetahuan".format(eval_type)] = ""
+    # form_nilai.drop(columns=["{}_Keterampilan".format(eval_type)], inplace=True)
+    # for aspek in ["Catatan Guru Mapel"]:
+    #     form_nilai[aspek] = ""
     form_nilai.to_excel("tmp/form_nilai_{}_{}.xlsx".format(pelajaran, kelas), index=None)
-
+    # send the file to user
+    tahun_ajaran, semester, folder_name_1 = check_period()
+    # create file komentar
+    # create komentar dataframe
+    komentar = 0
+    try:
+        dbx.files_get_metadata("/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+    except:
+        komentar = 1
+    if komentar:
+        form_komentar = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
+        form_komentar["Komentar"] = ""
+        form_komentar.to_excel("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), index=None)
+        with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
+            dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
 
 @app.route("/clear")
 def clearSession():
@@ -744,6 +1221,14 @@ def download_rekap_nilai(filenames):
 def download_template_nilai(pelajaran, kelas):
     path_data = os.path.join(APP_ROOT, 'tmp/')
     filenames = "form_nilai_{}_{}.xlsx".format(pelajaran, kelas)
+    # send the file to user
+    return send_from_directory(path_data, filename=filenames, as_attachment=True)
+
+@app.route('/admin/data-siswa/template')
+def download_template_data_siswa():
+    path_data = os.path.join(APP_ROOT, 'data/')
+    filenames = "data_siswa_template.xlsx"
+    # return filenames
     # send the file to user
     return send_from_directory(path_data, filename=filenames, as_attachment=True)
 

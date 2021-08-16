@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Plotting Pengajaran{% endblock %}
+{% block content %}
+    <!-- <div class="container">
+        <div class="row">
+            <h3>Login Sebagai</h3>
+        </div>
+    </div> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="container" style="margin-bottom: 50px;">
+        <form action="{{ url_for('plot_pengajaran') }}" id="my-form" method="POST" enctype=multipart/form-data >
+        <table class="table" id="table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Mata pelajaran</th>
+                    <th style="width: 25%;">VII</th>
+                    <th style="width: 25%;">VIII</th>
+                    <th style="width: 25%;">IX </th>
+                </tr>
+            </thead>
+                <tbody>
+                    {% for i in range(jlh_list): %}
+                    <tr>
+                        <td style="max-height: 10px; padding: 4px;width: 25%; text-align: left;">
+                            <p>{{list_mapel[i]}}</p>
+                        </td>
+                        
+                        <td style="max-height: 10px; padding: 4px;width: 25%;text-align: left;">
+                            <!-- <p>{{list_kelasVII[i]}}</p> -->
+                            <input list="list_guru" type="text" style="min-width: 250px;" class="dropdwn" name="list_kelasVII[]" id="list_kelasVII[]" value="{{list_kelasVII[i]}}"> 
+                            <datalist id="list_guru">
+                                {% for i in range(jlh_guru): %}
+                                <option value="{{list_guru[i]}}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </td>
+                        
+                        <td style="max-height: 10px; padding: 4px;width: 25%;text-align: left;">
+                            <!-- <p>{{list_kelasVIII[i]}}</p> -->
+                            <input list="list_guru" type="text" style="min-width: 250px;" class="dropdwn" name="list_kelasVIII[]" id="list_kelasVIII[]" value="{{list_kelasVIII[i]}}"> 
+                            <datalist id="list_guru">
+                                {% for i in range(jlh_guru): %}
+                                <option value="{{list_guru[i]}}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </td>
+                        
+                        <td style="max-height: 10px; padding: 4px;width: 25%;text-align: left;">
+                            <!-- <p>{{list_kelasIX[i]}}</p> -->
+                            <input list="list_guru" type="text" style="min-width: 250px;" class="dropdwn" name="list_kelasIX[]" id="list_kelasIX[]" value="{{list_kelasIX[i]}}"> 
+                            <datalist id="list_guru">
+                                {% for i in range(jlh_guru): %}
+                                <option value="{{list_guru[i]}}"></option>
+                                {% endfor %}
+                            </datalist>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>           
+        </table>   
+        &nbsp;
+        <div class="container d-flex justify-content-end">
+            <div class="row">
+                <button type="submit" class="btn btn-outline-primary btn-lg" id="submit" name="submit" value="1" style="min-width: 200px;">Submit</button>
+            </div>
+        </div>
+        </form>
+    </div>
+    <script>
+
+
+        $('.dropdwn').on('click', function() {
+            $(this).val('');
+        });
+        // $('#kelas_siswa').on('mouseleave', function() {
+        //     if ($(this).val() == '') {
+        //         $(this).val('{{kelas_siswa}}');
+        //     }
+        // });
+    </script>
+    
+{% endblock %}

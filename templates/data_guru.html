@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Data Guru{% endblock %}
+{% block content %}
+    <!-- <div class="container">
+        <div class="row">
+            <h3>Login Sebagai</h3>
+        </div>
+    </div> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="container" style="margin-bottom: 50px;">
+        <table class="table" id="table">
+            <thead>
+                <tr>
+                    <th style="width: 10%;">No.</th>
+                    <th style="width: 20%;">ID Guru</th>
+                    <th style="width: 30%; text-align: left;">Nama</th>
+                    <th style="width: 20%; text-align: left;">Password </th>
+                    <th style="width: 20%;"> </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(jlh_list): %}
+                {% if i%2 == 0 :%}
+                <tr>
+                {% else: %}
+                <tr style="background-color: #DCDCDC">
+                {% endif %}
+                    <td style="max-height: 5px; padding: 0px; width: 10%;">{{i+1}}.</td>
+                    <td style="max-height: 5px; padding: 0px; width: 20%;">{{list_id[i]}}</td>
+                    <td style="max-height: 5px; padding: 0px; width: 30%; text-align: left;">{{list_nama[i]}}</td>
+                    <td style="max-height: 5px; padding: 0px; width: 20%; text-align: left;">{{list_password[i]}}</td>
+                    <form action="{{ url_for('edit_guru')}}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
+                        <input type="hidden" id="id_sel"name="id_sel" value="{{list_id[i]}}">
+                        <input type="hidden" id="nama_sel"name="nama_sel" value="{{list_nama[i]}}">
+                        <input type="hidden" id="pass_sel"name="pass_sel" value="{{list_password[i]}}">
+                        <!-- <td style="max-height: 5px; padding: 0px; width: 20%; text-align: left;">
+                            <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="1" style="min-width: 100px;">Lihat</button>
+                        </td> -->
+                        <td style="max-height: 5px; padding: 0px; width: 20%;">
+                            <button type="submit" class="btn btn-outline-primary btn-sm" id="edit" name="edit" value="1" style="min-width: 100px;">Edit</button>
+                        </td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>    
+        </table>
+    </div>
+    <div class="container justify-content-end" id="role-select" style="margin-top: 40px;">
+        <div class="container d-flex justify-content-end">
+            <form action="{{ url_for('tambah_guru') }}" id="my-form" method="POST" enctype=multipart/form-data >
+                <div class="row">
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="kelas" name="kelas" value="tambah" style="min-width: 200px;">Tambah Guru</button>
+                </div>
+            </form>
+        </div>
+        &nbsp;
+    </div>
+    
+{% endblock %}

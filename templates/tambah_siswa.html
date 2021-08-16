@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Tambah Siswa{% endblock %}
+{% block content %}
+    <!-- <br><br><br><br> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('data_siswa')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="container d-flex" style="margin-bottom: 50px;">
+        <div class="row d-flex" style="width: 100%; align-items: center; ">
+            <div class="col-3"></div>
+            <div class="col-4">
+                <h4>Unduh template data siswa</h4>
+            </div>
+            <div class="col-2">
+                <a href="{{ url_for('download_template_data_siswa')}}"  class="btn btn-primary btn-md" style="width: 150px;" >Unduh template</a>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="role-select" style="width: 100%;">
+        <form action="{{ url_for('tambah_siswa') }}" id="my-form" method="POST" enctype=multipart/form-data>
+            <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
+            <div class="row d-flex" style="width: 100%; align-items: center; ">
+                <div class="col-3"></div>
+                <div class="col-4">
+                    <p>Unggah data siswa</p>
+                </div>
+            </div>
+            <div class="row d-flex" style="width: 100%; align-items: center; ">
+                <div class="col-3"></div>
+                <div class="col-4">
+                    <div class="custom-file" >
+                        <input type="file" class="custom-file-input" accept=".xlsx" id="customFile" name="file" required>
+                        <label class="custom-file-label" for="customFile" >Pilih dokumen..</label>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="btn btn-outline-primary btn-md" id="unggah" name="unggah" value="1" style="width: 150px;">Unggah</button>    
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+          var fileName = $(this).val().split("\\").pop();
+          $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+{% endblock %}

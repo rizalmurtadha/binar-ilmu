@@ -10,8 +10,10 @@
     {% block additional%}{% endblock %}
 </head>
 <body>
-    
-    <div class="container kop">
+    <div class="container d-flex justify-content-end" style="margin: 10px auto;">
+        <a href="{{url_for('clearSession')}}"><button class="btn btn-secondary btn-md">Logout</button></a>
+    </div>
+    <div class="container kop" style="margin-top: 0px;">
         <table style="width: 100%; min-height: 150px;" id="">
             <tbody id="table-kop">
                 <tr>
@@ -46,10 +48,11 @@
 
             </tbody>
         </table>
+        <hr style="margin-top: 0px;" />
     </div>
-    <div class="container d-flex justify-content-end" style="margin: 30px auto;">
+    <!-- <div class="container d-flex justify-content-end" style="margin: 30px auto;">
         <a href="{{url_for('clearSession')}}"><button class="btn btn-secondary btn-md">Logout</button></a>
-    </div>
+    </div> -->
     {% block content %}
     {% endblock %}
 </body>
