@@ -176,7 +176,7 @@ def data_siswa():
                 # load data siswa
                 file_stream=stream_dropbox_file("/data_siswa.xlsx")
                 data_siswa = pd.read_excel(file_stream)
-                data_kelas = data_siswa[data_siswa["Kelas"] == kelas] 
+                data_kelas = data_siswa[data_siswa["Kelas"] == kelas]
                 list_nisn = data_kelas["NISN"].tolist()
                 list_siswa = data_kelas["Nama"].tolist()
                 list_kelas_siswa = data_kelas["Kelas"].tolist()
@@ -228,7 +228,7 @@ def edit_siswa():
                 data_siswa.loc[nisn_edit, "Nama"] = nama_edit
                 data_siswa.loc[nisn_edit, "Kelas"] = kelas_edit
                 data_siswa.reset_index(inplace=True)
-                
+
 
                 data_siswa.to_excel("./data/data_siswa.xlsx", index=None)
                 with open("./data/data_siswa.xlsx", 'rb') as f:
@@ -244,7 +244,7 @@ def edit_siswa():
                 with open("./data/data_siswa.xlsx", 'rb') as f:
                     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("data_siswa"))
-        return render_template("edit_siswa.html",kelas=kelas,list_kelas=list_kelas, nisn_edit=nisn_edit, 
+        return render_template("edit_siswa.html",kelas=kelas,list_kelas=list_kelas, nisn_edit=nisn_edit,
                                         nama_edit=nama_edit, kelas_edit=kelas_edit)
 
     else:
@@ -266,7 +266,7 @@ def tambah_siswa():
                     excel_name = file.filename
                     file_destination = "/".join([path_nilai,excel_name])
                     file.save(file_destination)
-            
+
                     # Unggah
                     # uploaded file is located at ./tmp/data_siswa_template.xlsx to
                     new_data = pd.read_excel(file_destination)
@@ -340,8 +340,8 @@ def edit_guru():
                 data_guru.to_excel("./data/data_guru.xlsx", index=None)
                 with open("./data/data_guru.xlsx", 'rb') as f:
                     dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
-                return redirect(url_for("data_guru")) 
-            return render_template("edit_guru.html", id_sel=id_sel, 
+                return redirect(url_for("data_guru"))
+            return render_template("edit_guru.html", id_sel=id_sel,
                                         nama_sel=nama_sel, pass_sel=pass_sel)
 
     else:
@@ -410,7 +410,7 @@ def plot_pengajaran():
         data_guru = pd.read_excel(file_stream)
         list_guru = data_guru["Nama"].tolist()
 
-        
+
 
         return render_template("plot_pengajaran.html",list_mapel=list_mapel,jlh_list=len(list_mapel),list_guru=list_guru,
                                    list_kelasVII=list_kelasVII, list_kelasVIII=list_kelasVIII,list_kelasIX=list_kelasIX,jlh_guru=len(list_guru))
@@ -443,7 +443,7 @@ def ganti_password():
             else:
                 # update password lama
                 data_guru.loc[id_guru, "Password"] = passwd_baru
-            data_guru.reset_index(inplace=True)   
+            data_guru.reset_index(inplace=True)
             data_guru.to_excel("./data/data_guru.xlsx", index=None)
             with open("./data/data_guru.xlsx", 'rb') as f:
                 dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
@@ -485,7 +485,7 @@ def role():
         if len(mapel_list) > 0:
             for i in range(len(mapel_list)):
                 print("Guru {} {}".format(mapel_list[i], kelas_list[i]))
-        
+
         # load data wali kelas
         file_stream=stream_dropbox_file("/guru_wali_kelas.xlsx")
         guru_wali_kelas = pd.read_excel(file_stream)
@@ -515,9 +515,9 @@ def role_mapel():
             nama_mapel = request.form['mapel']
             kelas = request.form['kelas']
             return render_template("role_mapel.html", nama_mapel=nama_mapel, kelas=kelas)
-        
+
         return redirect(url_for("role"))
-        
+
     else:
         return redirect(url_for("login"))
 
@@ -528,9 +528,9 @@ def role_wali():
             nama_mapel = request.form['mapel']
             kelas = request.form['kelas']
             return render_template("role_wali.html", nama_mapel=nama_mapel, kelas=kelas)
-        
+
         return redirect(url_for("role"))
-        
+
     else:
         return redirect(url_for("login"))
 
@@ -538,7 +538,7 @@ def role_wali():
 def role_wali_menu():
     if "user" in session:
         if request.method=="POST":
-            eval_type = request.form['eval_type']   #"PTS" 
+            eval_type = request.form['eval_type']   #"PTS"
             pelajaran = request.form['mapel']   #"Wali Kelas"
             kelas = request.form['kelas']       #"VII"
             try:
@@ -646,7 +646,7 @@ def role_mapel_menu():
         if request.method=="POST":
             # 3. Menu role guru MK
             # input from previous step
-            eval_type = request.form['eval_type']   #"PTS" 
+            eval_type = request.form['eval_type']   #"PTS"
             pelajaran = request.form['mapel']   #"Matematika"
             kelas = request.form['kelas']       #"VII"
             try:
@@ -659,7 +659,7 @@ def role_mapel_menu():
 
             # check input status
             check_folder(eval_type)
-            # copy template status nilai if not exist    
+            # copy template status nilai if not exist
             tahun_ajaran, semester, folder_name_1 = check_period()
             try:
                 dbx.files_get_metadata("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
@@ -673,11 +673,11 @@ def role_mapel_menu():
                 status = status_nilai.loc[pelajaran, kelas]
             if status == 0:
                 # go to input nilai
-                return render_template("aspek_materi.html", eval_type=eval_type, pelajaran=pelajaran, kelas=kelas)   
+                return render_template("aspek_materi.html", eval_type=eval_type, pelajaran=pelajaran, kelas=kelas)
             else:
                 # pass # go to rekap page
                 return redirect(url_for("mapel_rekap", eval_type=eval_type, pelajaran=pelajaran, kelas=kelas))
-                
+
         else:
             return redirect(url_for("role"))
     else:
@@ -691,10 +691,10 @@ def menu_input():
         if request.method=="POST":
             # 4. Input aspek materi
             aspek_materi = request.form['aspek_materi']
-            eval_type = request.form['eval_type']   #"PTS" 
+            eval_type = request.form['eval_type']   #"PTS"
             pelajaran = request.form['pelajaran']   #"Matematika"
             kelas = request.form['kelas']       #"VII"
-            
+
             try:
                 create = request.form['create']
             except:
@@ -703,19 +703,19 @@ def menu_input():
             if create =="1":
                 save_template_form_nilai(pelajaran, kelas, aspek_materi,eval_type)
                 create = "0"
-            
+
             try:
                 unggah = request.form['unggah']
             except:
                 unggah = "0"
-            
+
             if unggah=="1":
                 file = request.files["file"]
                 unggah_form_nilai(file,eval_type,pelajaran,kelas)
                 return redirect(url_for("mapel_rekap", eval_type=eval_type, pelajaran=pelajaran, kelas=kelas, aspek_materi=aspek_materi))
 
-            return render_template("unggah_nilai.html", aspek_materi=aspek_materi, 
-                                        eval_type=eval_type, pelajaran=pelajaran, 
+            return render_template("unggah_nilai.html", aspek_materi=aspek_materi,
+                                        eval_type=eval_type, pelajaran=pelajaran,
                                         kelas=kelas )
         else:
             return redirect(url_for("role"))
@@ -735,7 +735,7 @@ def wali_rekap():
         update = "0"
         lihat = None
         if request.method=="POST":
-            eval_type = request.form['eval_type']   #"PTS" 
+            eval_type = request.form['eval_type']   #"PTS"
             pelajaran = request.form['pelajaran']   #"Matematika"
             kelas = request.form['kelas']       #"VII"
             # cek save komentar
@@ -761,7 +761,7 @@ def wali_rekap():
                 checked_siswa = []
             # Tombol Cetak Semua
             cetak_semua = request.form['cetak_semua']
-            
+
 
         # tampilan rekap per siswa
         tahun_ajaran, semester, folder_name_1 = check_period()
@@ -769,7 +769,7 @@ def wali_rekap():
         file_stream=stream_dropbox_file("/nilai/{}/{}/Rekap_Nilai_{}.xlsx".format(folder_name_1, eval_type, kelas))
         form_nilai = pd.read_excel(file_stream)
 
-        list_nisn = form_nilai["NISN"].tolist() 
+        list_nisn = form_nilai["NISN"].tolist()
         list_siswa = form_nilai["Nama"].tolist()
 
         form_nilai.set_index("NISN", inplace=True)
@@ -778,7 +778,7 @@ def wali_rekap():
         form_komentar = pd.read_excel(file_stream)
         form_komentar.set_index("NISN", inplace=True)
         # show the list of siswa
-        
+
         if update == "1":
             # return str(checked_siswa)
             # update kelas
@@ -794,7 +794,7 @@ def wali_rekap():
             # with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
             #     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
             return redirect(url_for("role"))
-    
+
         if save_komentar=="1":
             # update Submit Komentar
             komentar = request.form['komentar']     # "Progres siswa sudah baik" # obtained from text box
@@ -835,7 +835,7 @@ def wali_rekap():
             html= render_template("nilai_wali.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=nisn_siswa,
                                         pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,
                                         eval_type=eval_type, nama_guru=session['nama_user'],jlh_mapel=jlh_mapel,jlh_nilai_sel=len(nilai_sel))
-        
+
         if cetak_semua == "1":
             # Cetak Semua >> iterating to print the data of all student (./nilai/Name_NISN_Raport.pdf)
             # merging pdf file
@@ -861,7 +861,7 @@ def wali_rekap():
                                 nilai_sel.append("{}".format(nilai_siswa_sel.iloc[0,i]))
                     else:
                         nilai_sel.append(nilai_siswa_sel.iloc[0,i])
-                
+
                 jlh_mapel = int((len(nama_mapel)))
                 html= render_template("nilai_wali.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=list_nisn[siswa],
                                             pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,
@@ -874,6 +874,7 @@ def wali_rekap():
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
+                # config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
                     # config for local windows :
                 # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -883,7 +884,7 @@ def wali_rekap():
                 # pdf = pdfkit.from_string(html, filename_pdf, css=css)
 
                 pdfs.append(filename_pdf)
-            
+
             merger = PdfFileMerger()
             for pdf in pdfs:
                 merger.append(pdf,import_bookmarks=False)
@@ -904,6 +905,7 @@ def wali_rekap():
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
+                # config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
                     # config for local Windows :
                 # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -912,7 +914,7 @@ def wali_rekap():
                 # config for local pc
                 # pdf = pdfkit.from_string(html, False, css=css)
 
-                
+
                 response = make_response(pdf)
                 response.headers["Content-Type"] = "application/pdf"
                 response.headers["Content-Disposition"] = headers_filename
@@ -941,7 +943,7 @@ def mapel_rekap():
         cetak_semua = "0"
         lihat = None
         if request.method=="POST":
-            eval_type = request.form['eval_type']   #"PTS" 
+            eval_type = request.form['eval_type']   #"PTS"
             pelajaran = request.form['pelajaran']   #"Matematika"
             kelas = request.form['kelas']       #"VII"
             # cek save komentar
@@ -998,7 +1000,7 @@ def mapel_rekap():
             aspek_materi = aspek_materi[0::2]
             aspek_materi = [aspek_materi[i].replace("_Pengetahuan","") for i in range(len(aspek_materi)) ]
             nilai_sel = []
-            
+
             for i in range(nilai_siswa_sel.shape[1]):
                 if i > batas :
                     nilai_sel.append("{0:.2f}".format(nilai_siswa_sel.iloc[0,i]))
@@ -1027,7 +1029,7 @@ def mapel_rekap():
                 aspek_materi = aspek_materi[0::2]
                 aspek_materi = [aspek_materi[i].replace("_Pengetahuan","") for i in range(len(aspek_materi)) ]
                 nilai_sel = []
-                
+
                 for i in range(nilai_siswa_sel.shape[1]):
                     if i > batas :
                         nilai_sel.append("{0:.2f}".format(nilai_siswa_sel.iloc[0,i]))
@@ -1045,6 +1047,7 @@ def mapel_rekap():
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
+                # config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
                     # config for local Windows :
                 # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -1076,6 +1079,7 @@ def mapel_rekap():
                 config = pdfkit.configuration(wkhtmltopdf='/app/bin/wkhtmltopdf')
                     # config for local ver 1 :
                 # config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
+                # config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
                     # config for local Windows :
                 # path_wkhtmltopdf = "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
                 # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -1084,7 +1088,7 @@ def mapel_rekap():
                 # config for local pc
                 # pdf = pdfkit.from_string(html, False, css=css)
 
-                
+
                 response = make_response(pdf)
                 response.headers["Content-Type"] = "application/pdf"
                 response.headers["Content-Disposition"] = headers_filename
@@ -1096,14 +1100,36 @@ def mapel_rekap():
 
             elif lihat == "1":
                 return html
-        
+
         # Reset Nilai >> go to step 4
-        
+
         return render_template("rekap_mapel.html",jlh_list=len(list_siswa), list_nisn=list_nisn, list_siswa=list_siswa,
                                         eval_type=eval_type, pelajaran=pelajaran, kelas=kelas)
 
     else:
         return redirect(url_for("login"))
+
+def deskripsi(x, type="spiritual"):
+    if type == "spiritual":
+        if x == 1:
+            predikat = "Kurang. Kurang menerima dan tidak konsisten menjalankan, menghargai, menghayati dan mengamalkan nilai agama."
+        elif x == 2:
+            predikat = "Cukup. Cukup menerima dan belum konsisten menjalankan, menghargai, menghayati dan mengamalkan nilai agama."
+        elif x == 3:
+            predikat = "Baik. Dapat menerima dan mulai konsisten menjalankan, menghargai, menghayati dan mengamalkan nilai agama."
+        else:
+            predikat = "Sangat baik. Sangat menerima dan sudah konsisten menjalankan, menghargai, menghayati dan mengamalkan nilai agama."
+    else:
+        if x == 1:
+            predikat = "Kurang. Kurang menerima dan tidak konsisten menjalankan, menghargai dan menghayati perilaku jujur, disiplin, tanggung jawab, peduli, toleransi, gotong royong, santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya."
+        elif x == 2:
+            predikat = "Cukup. Cukup menerima dan belum konsisten menjalankan, menghargai dan menghayati perilaku jujur, disiplin, tanggung jawab, peduli, toleransi, gotong royong, santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya."
+        elif x == 3:
+            predikat = "Baik. Dapat menerima dan mulai konsisten menjalankan, menghargai dan menghayati perilaku jujur, disiplin, tanggung jawab, peduli, toleransi, gotong royong, santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya."
+        else:
+            predikat = "Sangat baik. Sangat menerima dan sudah konsisten menjalankan, menghargai dan menghayati perilaku jujur, disiplin, tanggung jawab, peduli, toleransi, gotong royong, santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya."
+    return predikat
+
 
 def unggah_form_nilai(file, eval_type, pelajaran, kelas):
     # grab upload excel name
@@ -1138,6 +1164,18 @@ def unggah_form_nilai(file, eval_type, pelajaran, kelas):
     nilai_keterampilan = form_nilai[list_keterampilan]
     nilai_keterampilan["Harian_Avg"] =  nilai_keterampilan.mean(axis=1)
     form_nilai["Nilai Akhir Keterampilan"] = nilai_keterampilan["Harian_Avg"]
+    form_nilai["Spiritual_Deskripsi"] = form_nilai["Spiritual_Predikat"].apply(lambda x: deskripsi(x, type="spiritual"))
+    form_nilai["Sosial_Deskripsi"] = form_nilai["Spiritual_Predikat"].apply(lambda x: deskripsi(x, type="sosial"))
+
+    col_title = form_nilai.columns.tolist()
+    form_nilai_new = form_nilai[col_title[:3]]
+    form_nilai_new["Spiritual_Deskripsi"] = form_nilai["Spiritual_Predikat"].apply(lambda x: deskripsi(x, type="spiritual"))
+    form_nilai_new[col_title[3]] = form_nilai[col_title[3]]
+    form_nilai_new["Sosial_Deskripsi"] = form_nilai["Spiritual_Predikat"].apply(lambda x: deskripsi(x, type="sosial"))
+    for title in col_title[4:]:
+        form_nilai_new[title] = form_nilai[title]
+
+    form_nilai = form_nilai_new
 
     form_nilai.to_excel(file_destination, index=None)
 
@@ -1166,7 +1204,7 @@ def save_template_form_nilai(pelajaran, kelas, aspek_materi, eval_type):
     file_stream=stream_dropbox_file("/data_siswa.xlsx")
     data_siswa = pd.read_excel(file_stream)
     # define aspek penilaian
-    aspek_lain = ["Spiritual_Predikat", "Spiritual_Deskripsi", "Sosial_Predikat", "Sosial_Deskripsi"]
+    aspek_lain = ["Spiritual_Predikat", "Sosial_Predikat"]
     aspek_materi = aspek_materi.split(";")
     tmp = aspek_materi[:]
     aspek_materi = []
@@ -1183,7 +1221,7 @@ def save_template_form_nilai(pelajaran, kelas, aspek_materi, eval_type):
     for aspek in aspek_lain:
         form_nilai[aspek] = ""
     for aspek in aspek_materi:
-        for i in ["Pengetahuan", "Keterampilan"]:        
+        for i in ["Pengetahuan", "Keterampilan"]:
             form_nilai["{}_{}".format(aspek, i)] = ""
     form_nilai["{}_Pengetahuan".format(eval_type)] = ""
     # form_nilai.drop(columns=["{}_Keterampilan".format(eval_type)], inplace=True)
