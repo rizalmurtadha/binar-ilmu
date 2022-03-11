@@ -417,6 +417,42 @@ def plot_pengajaran():
     else:
         return redirect(url_for("login"))
 
+@app.route("/admin/plotting-wali",methods=["GET", "POST"])
+def plot_wali():
+    if session["user"] == 100:
+
+        # 16 Halaman Plotting Pengajaran
+        # load guru mapel
+        file_stream=stream_dropbox_file("/guru_wali_kelas.xlsx")
+        guru_wali_kelas = pd.read_excel(file_stream)
+        # buat cek data
+        guru_wali_kelas.to_excel("./data/guru_wali_kelas.xlsx", index=None)
+        # return "test plot wali"
+        list_wali = guru_wali_kelas["Wali Kelas"].tolist()
+        list_kelas = guru_wali_kelas["Kelas"].tolist()
+        # get list guru
+        # load data guru
+        file_stream=stream_dropbox_file("/data_guru.xlsx")
+        data_guru = pd.read_excel(file_stream)
+        list_guru = data_guru["Nama"].tolist()
+
+        if request.method=="POST":
+            list_wali_baru = request.form.getlist('list_wali[]') 
+            newData = pd.DataFrame(list(zip(list_kelas, list_wali_baru)),
+               columns =['Kelas', 'Wali Kelas'])
+
+            newData.to_excel("./data/guru_wali_kelas_baru.xlsx", index=None)
+            # update guru_mapel.xlsx according to the input
+            ### guru_mapel.to_excel("./data/guru_mapel.xlsx", index=None)
+            with open("./data/guru_wali_kelas_baru.xlsx", 'rb') as f:
+                dbx.files_upload(f.read(), "/guru_wali_kelas.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            return redirect(url_for("plot_wali"))
+
+        return render_template("plot_wali.html",jlh_list=len(list_kelas),list_guru=list_guru,
+                                   jlh_guru=len(list_guru),list_kelas=list_kelas,list_wali=list_wali)
+    else:
+        return redirect(url_for("login"))
+
 @app.route("/ganti-pass",methods=["GET", "POST"])
 def ganti_password():
     if "user" in session:
@@ -651,6 +687,23 @@ def role_mapel_menu():
             kelas = request.form['kelas']       #"VII"
             try:
                 status = int(request.form['status'])
+                tahun_ajaran, semester, folder_name_1 = check_period()
+                if status == 0:
+                    # load form nilai
+                    # file_stream=stream_dropbox_file("/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+                    try:
+                        dbx.files_delete("/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+                        # update input status
+                        # load status file
+                        file_stream=stream_dropbox_file("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+                        status_nilai = pd.read_excel(file_stream)
+                        status_nilai.set_index("Mata Pelajaran", inplace=True)
+                        status_nilai.loc[pelajaran, kelas] = 0
+                        status_nilai.to_excel("./tmp/status_nilai.xlsx")
+                        with open("./tmp/status_nilai.xlsx", 'rb') as f:
+                            dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
+                    except:
+                        print("gagal hapus data mapel")
             except:
                 status = None
             # cek input
@@ -683,7 +736,23 @@ def role_mapel_menu():
     else:
         return redirect(url_for("login"))
 
-
+@app.route("/statusnilai")
+def statusnilai():
+    eval_type = "PTS"
+    tahun_ajaran, semester, folder_name_1 = check_period()
+    try:
+        dbx.files_get_metadata("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+    except:
+        dbx.files_copy("/template_status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+    # load status nilai
+    file_stream=stream_dropbox_file("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+    
+    data = pd.read_excel(file_stream)
+    
+    data.to_excel("./data/statusnilai.xlsx", index=None)
+    # with open("./data/statusnilai.xlsx", 'rb') as f:    # untuk reset data
+    #     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+    return "hehe"
 
 @app.route("/input",methods=["GET", "POST"])
 def menu_input():
@@ -780,7 +849,7 @@ def wali_rekap():
         # show the list of siswa
 
         if update == "1":
-            # return str(checked_siswa)
+            # return str(len(checked_siswa))
             # update kelas
             file_stream=stream_dropbox_file("/data_siswa.xlsx")
             data_siswa = pd.read_excel(file_stream)
