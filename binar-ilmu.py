@@ -717,11 +717,20 @@ def role_mapel_menu():
             try:
                 dbx.files_get_metadata("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
             except:
-                dbx.files_copy("/template_status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+                file_stream=stream_dropbox_file("/guru_mapel.xlsx")
+                status_nilai = pd.read_excel(file_stream)
+                status_nilai.iloc[:,1:] = 0
+
+                status_nilai.to_excel("./data/status_nilai.xlsx", index=None)
+                with open("./data/status_nilai.xlsx", 'rb') as f:    # untuk reset data
+                    dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
+
+                # dbx.files_copy("/template_status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
             # load status nilai
             file_stream=stream_dropbox_file("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
             status_nilai = pd.read_excel(file_stream)
             status_nilai.set_index("Mata Pelajaran", inplace=True)
+
             if status == None:
                 status = status_nilai.loc[pelajaran, kelas]
             if status == 0:
