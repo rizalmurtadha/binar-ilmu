@@ -603,16 +603,19 @@ def role_wali_menu():
                 # create list mapel and kelas
                 mapel = guru_mapel.index.tolist()
                 # create list of exist file in folder nilai/tahun_sem/PTS or PAS
-                a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type, kelas))
+                # a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type, kelas))
+                a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type))
                 file_list = []
                 for i in range(len(a.entries)):
                     file_name = a.entries[i].name
                     file_list.append(file_name.split(".")[0])
+                print(file_list)
                 # create file rekap nilai
                 # load data siswa
                 file_stream=stream_dropbox_file("/data_siswa.xlsx")
                 data_siswa = pd.read_excel(file_stream)
                 form_nilai = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
+                form_nilai.reset_index(inplace=True, drop=True)
                 for mpl in mapel:
                     for aspek in ["Sikap", "Keterampilan", "Pengetahuan"]:
                         form_nilai["{}_{}".format(mpl, aspek)] = ""
@@ -630,6 +633,7 @@ def role_wali_menu():
                 for i in ["Sikap", "Pengetahuan", "Keterampilan"]:
                     aspek_dict[i] = []
                     pred_dict[i] = []
+                form_nilai.to_excel("tmp.xlsx")
                 for j in range(form_nilai.shape[0]):
                     for i in ["Sikap", "Pengetahuan", "Keterampilan"]:
                         tmp = []
