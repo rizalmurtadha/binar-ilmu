@@ -437,7 +437,7 @@ def plot_wali():
         list_guru = data_guru["Nama"].tolist()
 
         if request.method=="POST":
-            list_wali_baru = request.form.getlist('list_wali[]') 
+            list_wali_baru = request.form.getlist('list_wali[]')
             newData = pd.DataFrame(list(zip(list_kelas, list_wali_baru)),
                columns =['Kelas', 'Wali Kelas'])
 
@@ -603,16 +603,19 @@ def role_wali_menu():
                 # create list mapel and kelas
                 mapel = guru_mapel.index.tolist()
                 # create list of exist file in folder nilai/tahun_sem/PTS or PAS
-                a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type, kelas))
+                # a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type, kelas))
+                a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type))
                 file_list = []
                 for i in range(len(a.entries)):
                     file_name = a.entries[i].name
                     file_list.append(file_name.split(".")[0])
+                print(file_list)
                 # create file rekap nilai
                 # load data siswa
                 file_stream=stream_dropbox_file("/data_siswa.xlsx")
                 data_siswa = pd.read_excel(file_stream)
                 form_nilai = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
+                form_nilai.reset_index(inplace=True, drop=True)
                 for mpl in mapel:
                     for aspek in ["Sikap", "Keterampilan", "Pengetahuan"]:
                         form_nilai["{}_{}".format(mpl, aspek)] = ""
@@ -630,6 +633,7 @@ def role_wali_menu():
                 for i in ["Sikap", "Pengetahuan", "Keterampilan"]:
                     aspek_dict[i] = []
                     pred_dict[i] = []
+                form_nilai.to_excel("tmp.xlsx")
                 for j in range(form_nilai.shape[0]):
                     for i in ["Sikap", "Pengetahuan", "Keterampilan"]:
                         tmp = []
@@ -717,11 +721,20 @@ def role_mapel_menu():
             try:
                 dbx.files_get_metadata("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
             except:
-                dbx.files_copy("/template_status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+                file_stream=stream_dropbox_file("/guru_mapel.xlsx")
+                status_nilai = pd.read_excel(file_stream)
+                status_nilai.iloc[:,1:] = 0
+
+                status_nilai.to_excel("./data/status_nilai.xlsx", index=None)
+                with open("./data/status_nilai.xlsx", 'rb') as f:    # untuk reset data
+                    dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
+
+                # dbx.files_copy("/template_status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
             # load status nilai
             file_stream=stream_dropbox_file("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
             status_nilai = pd.read_excel(file_stream)
             status_nilai.set_index("Mata Pelajaran", inplace=True)
+
             if status == None:
                 status = status_nilai.loc[pelajaran, kelas]
             if status == 0:
@@ -746,9 +759,9 @@ def statusnilai():
         dbx.files_copy("/template_status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
     # load status nilai
     file_stream=stream_dropbox_file("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
-    
+
     data = pd.read_excel(file_stream)
-    
+
     data.to_excel("./data/statusnilai.xlsx", index=None)
     # with open("./data/statusnilai.xlsx", 'rb') as f:    # untuk reset data
     #     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
@@ -1217,6 +1230,14 @@ def unggah_form_nilai(file, eval_type, pelajaran, kelas):
     #     form_nilai.loc[i,"Pengetahuan"] = tmp
     # form_nilai.to_excel(file_destination, index=None)
     # load form nilai
+    # update komentar
+    form_komentar = form_nilai.iloc[:,[0,1,-1]]
+    tahun_ajaran, semester, folder_name_1 = check_period()
+    form_komentar.to_excel("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), index=None)
+    with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
+        dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
+
+    form_nilai = form_nilai.iloc[:,:-1]
     col_title = form_nilai.columns.tolist()
     list_pengetahuan = []; list_keterampilan = []
     for title in col_title:
@@ -1293,6 +1314,7 @@ def save_template_form_nilai(pelajaran, kelas, aspek_materi, eval_type):
         for i in ["Pengetahuan", "Keterampilan"]:
             form_nilai["{}_{}".format(aspek, i)] = ""
     form_nilai["{}_Pengetahuan".format(eval_type)] = ""
+    form_nilai["Komentar"] = ""
     # form_nilai.drop(columns=["{}_Keterampilan".format(eval_type)], inplace=True)
     # for aspek in ["Catatan Guru Mapel"]:
     #     form_nilai[aspek] = ""
@@ -1301,17 +1323,17 @@ def save_template_form_nilai(pelajaran, kelas, aspek_materi, eval_type):
     tahun_ajaran, semester, folder_name_1 = check_period()
     # create file komentar
     # create komentar dataframe
-    komentar = 0
-    try:
-        dbx.files_get_metadata("/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
-    except:
-        komentar = 1
-    if komentar:
-        form_komentar = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
-        form_komentar["Komentar"] = ""
-        form_komentar.to_excel("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), index=None)
-        with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
-            dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
+    # komentar = 0
+    # try:
+    #     dbx.files_get_metadata("/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+    # except:
+    #     komentar = 1
+    # if komentar:
+    #     form_komentar = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
+    #     form_komentar["Komentar"] = ""
+    #     form_komentar.to_excel("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), index=None)
+    #     with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
+    #         dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
 
 @app.route("/clear")
 def clearSession():
