@@ -16,74 +16,74 @@
             <tbody id="table-kop">
                 <tr>
                     <td style="width: 20%;">
-                        <h5><b>Nama Sekolah</b></h5>
+                        <h6><b>Nama Sekolah</b></h6>
                     </td>
                     <td style="width: 2%;">
-                        <h5><b>:</b></h5>
+                        <h6><b>:</b></h6>
                     </td>
                     <td style="width: 32%;">
-                        <h5><b>SMP Binar Ilmu</b></h5>
+                        <h6><b>SMP Binar Ilmu</b></h6>
                     </td>
 
                     <td style="width: 23%;">
-                        <h5><b>Nama Peserta Didik</b></h5>
+                        <h6><b>Nama Peserta Didik</b></h6>
                     </td>
                     <td style="width: 2%;">
-                        <h5><b>:</b></h5>
+                        <h6><b>:</b></h6>
                     </td>
                     <td style="width: 20%;">
-                        <h5><b>{{nilai_sel[1]}}</b></h5>
+                        <h6><b>{{nilai_sel[1]}}</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 20%;">
-                        <h5><b>Mata Pelajaran</b></h5>
+                        <h6><b>Mata Pelajaran</b></h6>
                     </td>
                     <td style="width: 2%;">
-                        <h5><b>:</b></h5>
+                        <h6><b>:</b></h6>
                     </td>
                     <td style="width: 32%;">
-                        <h5><b>{{pelajaran}}</b></h5>
+                        <h6><b>{{pelajaran}}</b></h6>
                     </td>
 
                     <td style="width: 23%;">
-                        <h5><b>Kelas</b></h5>
+                        <h6><b>Kelas</b></h6>
                     </td>
                     <td style="width: 2%;">
-                        <h5><b></b>:</h5>
+                        <h6><b>:</b></h6>
                     </td>
                     <td style="width: 20%;">
                         {% if kelas == "VII" :%}
-                            <h5><b>{{kelas}} (Tujuh)</b></h5>
+                            <h6><b>{{kelas}} (Tujuh)</b></h6>
                         {% elif kelas == "VIII" :%}
-                            <h5><b>{{kelas}} (Delapan)</b></h5>
+                            <h6><b>{{kelas}} (Delapan)</b></h6>
                         {% elif kelas == "IX" :%}
-                            <h5><b>{{kelas}} (Sembilan)</b></h5>
+                            <h6><b>{{kelas}} (Sembilan)</b></h6>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 20%;">
-                        <h5><b>Guru Mapel</b></h5>
+                        <h6><b>Guru Mapel</b></h6>
                     </td>
                     <td style="width: 2%;">
-                        <h5><b>:</b></h5>
+                        <h6><b>:</b></h6>
                     </td>
                     <td style="width: 32%;">
-                        <h5><b>{{nama_guru}}</b></h5>
+                        <h6><b>{{nama_guru}}</b></h6>
                     </td>
 
                     <td style="width: 23%;">
-                        <h5><b>Semester</b></h5>
+                        <h6><b>Semester</b></h6>
                     </td>
                     <td style="width: 2%;">
-                        <h5><b></b>:</h5>
+                        <h6><b>:</b></h6>
                     </td>
                     <td style="width: 20%;">
                         {% if semester == 1 :%}
-                            <h5><b>{{semester}} (Satu)</b></h5>
+                            <h6><b>{{semester}} (Satu)</b></h6>
                         {% elif semester == 2 :%}
-                            <h5><b>{{semester}} (Dua)</b></h5>
+                            <h6><b>{{semester}} (Dua)</b></h6>
                         {% endif %}
                     </td>
                 </tr>
@@ -97,18 +97,18 @@
             <tbody>
                 <tr>
                     <td style="text-align: left;">
-                        <h4><b>1. Sikap</b></h4>
+                        <h5><b>1. Sikap</b></h5>
                     </td>
                 </tr>
                 <tr id="Content-border"  style="background-color: #DCDCDC;">
                     <td style="width: 12%;">
-                        <h5><b>Aspek</b></h5>
+                        <h6><b>Aspek</b></h6>
                     </td>
                     <td style="width: 12%;">
-                        <h5><b>Predikat</b></h5>
+                        <h6><b>Predikat</b></h6>
                     </td>
                     <td style="width: 76%;">
-                        <h5><b>Deskripsi</b></h5>
+                        <h6><b>Deskripsi</b></h6>
                     </td>
                 </tr>
                 <tr id="Content-border">
@@ -147,18 +147,18 @@
             <tbody>
                 <tr>
                     <td style="text-align: left;">
-                        <h4><b>2. Pengetahuan dan Keterampilan</b></h4>
+                        <h5><b>2. Pengetahuan dan Keterampilan</b></h5>
                     </td>
                 </tr>
                 <tr id="Content-border"  style="background-color: #DCDCDC;">
                     <td style="width: 70%;">
-                        <h5><b>Aspek materi (pokok-pokok bahasan)</b></h5>
+                        <h6><b>Aspek materi (pokok-pokok bahasan)</b></h6>
                     </td>
                     <td style="width: 15%;">
-                        <h5><b>Pengetahuan</b></h5>
+                        <h6><b>Pengetahuan</b></h6>
                     </td>
                     <td style="width: 15%;">
-                        <h5><b>Keterampilan</b></h5>
+                        <h6><b>Keterampilan</b></h6>
                     </td>
                 </tr>
                 {% for i in range(jlh_aspek):%}
@@ -214,7 +214,7 @@
             <tbody>
                 <tr>
                     <td style="text-align: left;">
-                        <h4>3. Catatan Guru Mapel</h4>
+                        <h5>3. Catatan Guru Mapel</h5>
                     </td>
                 </tr>
                 <form action="{{ url_for('mapel_rekap')}}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
@@ -228,7 +228,7 @@
                     <td id="Content-border" style="text-align: justify;">
                         <div class="d-flex align-items-center" style="min-height: 80px;">
                             {% if lihat =="1" :%}
-                            <textarea id="komentar" name="komentar" rows="2" style="width:100%;min-height: 80px; min-width: 1110; max-width: 1110px;">{{komentar_siswa_sel}}</textarea>
+                            <textarea id="komentar" name="komentar" rows="2" maxlength="1000" style="width:100%;min-height: 80px; min-width: 1110; max-width: 1110px;">{{komentar_siswa_sel}}</textarea>
                             {% else: %}
                             <div style="margin: 0px 5px;">
                                 <p>{{komentar_siswa_sel}}</p>
@@ -272,12 +272,12 @@
     {% if lihat == "1": %}
     <div class="container" style="margin-top: 100px; margin-bottom: 0px;" >
         <div class="row">
-            
+<!--             
             {% if semester == 1: %}
                 <p><i>Raport {{eval_type}} Ganjil Pesantren Binar Ilmu Tahun Ajaran {{tahun_ajaran}}</i></p>
             {% else: %}
                 <p><i>Raport {{eval_type}} Genap Pesantren Binar Ilmu Tahun Ajaran {{tahun_ajaran}}</i></p>
-            {% endif %}
+            {% endif %} -->
             <!-- {% if semester == 1: %}
                 <p><i>Raport {{eval_type}} Ganjil SMP Binar Ilmu tahun ajaran {{tahun_ajaran}}</i></p>
             {% else: %}
@@ -290,7 +290,7 @@
         <p style="top: 1275px;">&nbsp;</p>
     </div>
     {% else: %}
-    <div class="container" style="margin-top: 50px; margin-bottom: 0px;">
+    <!-- <div class="container" style="margin-top: 50px; margin-bottom: 0px;">
         <div class="row" style="position: absolute; top: 1255px; margin-bottom: 0px;">
     
             {% if semester == 1: %}
@@ -300,7 +300,7 @@
             {% endif %}
             
         </div>
-    </div>
+    </div> -->
     {% endif %}
     
 {% endblock %}
