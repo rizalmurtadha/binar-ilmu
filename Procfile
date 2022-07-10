@@ -1,2 +1,2 @@
-web gunicorn binar-ilmu:app
+web: gunicorn binar-ilmu.wsgi
 
