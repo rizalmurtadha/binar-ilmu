@@ -27,4 +27,3 @@ statsmodels
 joblib
 openpyxl
 xlrd
-setuptools==40.3.0
