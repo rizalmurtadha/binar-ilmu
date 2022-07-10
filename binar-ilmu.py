@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import re
 from flask import Flask, redirect, url_for, render_template, request, send_from_directory, make_response, session, current_app
 import os
@@ -9,6 +10,7 @@ import csv
 import pdfkit
 import datetime as dtm
 from datetime import date,datetime
+
 
 import PyPDF2
 import dropbox
@@ -24,6 +26,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 path_nilai = os.path.join(APP_ROOT, 'nilai/')
 path_nilai = os.path.join(APP_ROOT, 'tmp/')
+path_tmp = os.path.join(APP_ROOT, 'tmp/')
 
 def stream_dropbox_file(path):
     _,res = dbx.files_download(path)
@@ -208,6 +211,7 @@ def edit_siswa():
                 dropout = request.form["dropout"]
             except:
                 dropout = "0"
+            
             kelas_edit = request.form["kelas_siswa"]
             nisn_edit = int(request.form["nisn_siswa"])
             nama_edit = request.form["nama_siswa"]
@@ -219,20 +223,156 @@ def edit_siswa():
             # nisn = 72100585
             # nama = "Agus Ahmad"  # <from input>
             # kelas = "VII"    # <from input>
+
+            # Get Detail from database for edit page 
+            data_siswa_new = data_siswa.fillna('')
+            data_siswa_new = data_siswa_new.loc[data_siswa_new['NISN'] == nisn_edit].values.flatten().tolist()
+            # return str(int(data_siswa_new[4]))
+            for i in range(len(data_siswa_new)):
+                if (isinstance(data_siswa_new[i], float)):
+                    data_siswa_new[i] = str(int(data_siswa_new[i]))
+
+            pas_foto_name = ""
+            ijazah_name = ""
+            kk_name = ""
+            akta_name = ""
+            if(save_edit =="0" and dropout =="0"):
+                pas_foto_list = dbx.files_list_folder(path="/dokumen/pas_foto")
+                for i in range(len(pas_foto_list.entries)):
+                    file_name = pas_foto_list.entries[i].name
+                    if ( str(nisn_edit) == file_name.split(".")[0]):
+                        pas_foto_name = "pas_foto_{}".format(file_name) 
+                        dbx.files_download_to_file("./tmp/{}".format(pas_foto_name), "/dokumen/pas_foto/{}".format(file_name))
+                
+                ijazah_list = dbx.files_list_folder(path="/dokumen/ijazah_sd")
+                for i in range(len(ijazah_list.entries)):
+                    file_name = ijazah_list.entries[i].name
+                    if ( str(nisn_edit) == file_name.split(".")[0]):
+                        ijazah_name = "ijazah_{}".format(file_name) 
+                        dbx.files_download_to_file("./tmp/{}".format(ijazah_name), "/dokumen/ijazah_sd/{}".format(file_name))
+
+                
+                kk_list = dbx.files_list_folder(path="/dokumen/kartu_keluarga")
+                for i in range(len(kk_list.entries)):
+                    file_name = kk_list.entries[i].name
+                    if ( str(nisn_edit) == file_name.split(".")[0]):
+                        kk_name = "kartu_keluarga{}".format(file_name) 
+                        dbx.files_download_to_file("./tmp/{}".format(kk_name), "/dokumen/kartu_keluarga/{}".format(file_name))
+                
+                akta_list = dbx.files_list_folder(path="/dokumen/akta_kelahiran")
+                for i in range(len(akta_list.entries)):
+                    file_name = akta_list.entries[i].name
+                    if ( str(nisn_edit) == file_name.split(".")[0]):
+                        akta_name = "akta_kelahiran_{}".format(file_name) 
+                        dbx.files_download_to_file("./tmp/{}".format(akta_name), "/dokumen/akta_kelahiran/{}".format(file_name))
+            
             data_siswa.set_index("NISN", inplace=True)
+                
+            # return str(data_siswa_new[0])
 
             if save_edit=="1":
                 # return nisn_edit
                 # return str(kelas_edit+" "+nama_edit)
                 # Tombol Edit
-                data_siswa.loc[nisn_edit, "Nama"] = nama_edit
-                data_siswa.loc[nisn_edit, "Kelas"] = kelas_edit
+                data_siswa.loc[nisn_edit, "Nama"]           = nama_edit
+                data_siswa.loc[nisn_edit, "Nama Panggilan"] = request.form["nama_panggilan"] 
+                # data_siswa.loc[nisn_edit, "NISN"]           = nisn_edit
+                data_siswa.loc[nisn_edit, "Kelas"]          = kelas_edit
+                data_siswa.loc[nisn_edit, "NIK"]            = str(request.form["NIK"]) 
+
+                data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir"]  = request.form.get('TTL_siswa')
+                data_siswa.loc[nisn_edit, "Jenis Kelamin"]          = request.form.get("jenis_kelamin")
+                data_siswa.loc[nisn_edit, "Agama"]                  = request.form["agama_siswa"] 
+                data_siswa.loc[nisn_edit, "Status dalam Keluarga"]  = request.form["status"] 
+                data_siswa.loc[nisn_edit, "Anak ke"]                = request.form["anak_ke"] 
+                data_siswa.loc[nisn_edit, "Alamat Siswa"]           = request.form["alamat_siswa"] 
+                data_siswa.loc[nisn_edit, "Koordinat Bujur"]        = request.form["koor_bujur"] 
+                data_siswa.loc[nisn_edit, "Koordinat Lintang"]      = request.form["koor_lintang"] 
+                data_siswa.loc[nisn_edit, "Nomor Telepon/ hp siswa"] = str(request.form["telp_siswa"])
+                data_siswa.loc[nisn_edit, "Sekolah Asal"]           = request.form["sekolah_asal"] 
+                data_siswa.loc[nisn_edit, "Tinggi Badan "]          = request.form["tinggi_badan"] 
+                data_siswa.loc[nisn_edit, "Berat Badan"]            = request.form["berat_badan"] 
+
+                data_siswa.loc[nisn_edit, "Nama Ayah"]                  = request.form["nama_ayah"]
+                data_siswa.loc[nisn_edit, "NIK Ayah"]                   = str(request.form["NIK_ayah"]) 
+                data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir Ayah"] = request.form.get("TTL_ayah") 
+                data_siswa.loc[nisn_edit, "Agama Ayah"]                 = request.form["agama_ayah"]
+                data_siswa.loc[nisn_edit, "Alamat Ayah"]                = request.form["alamat_ayah"] 
+                data_siswa.loc[nisn_edit, "Nomor Telepon/ HP Ayah"]     = str(request.form["telp_ayah"]) 
+                data_siswa.loc[nisn_edit, "Pekerjaan Ayah"]             = request.form["pekerjaan_ayah"] 
+                data_siswa.loc[nisn_edit, "Instansi Tempat Bekerja"]    = request.form["instansi_ayah"]
+                data_siswa.loc[nisn_edit, "Akumulasi Gaji Ayah dan Ibu"] = request.form.get("penghasilan") 
+                data_siswa.loc[nisn_edit, "Pendidikan Terakhir ayah"]   = request.form["pendidikan_ayah"] 
+                
+                data_siswa.loc[nisn_edit, "Nama Ibu"]                   = request.form["nama_ibu"] 
+                data_siswa.loc[nisn_edit, "NIK Ibu"]                    = str(request.form["NIK_ibu"]) 
+                data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir Ibu"]  = request.form.get("TTL_ibu")
+                data_siswa.loc[nisn_edit, "Agama Ibu"]                  = request.form["agama_ibu"] 
+                data_siswa.loc[nisn_edit, "Alamat Ibu"]                 = request.form["alamat_ibu"] 
+                data_siswa.loc[nisn_edit, "No Tlp/ HP Ibu"]             = str(request.form["telp_ibu"])
+                data_siswa.loc[nisn_edit, "Pekerjaan Ibu"]              = request.form["pekerjaan_ibu"] 
+                data_siswa.loc[nisn_edit, "Instansi Tempat Bekerja Ibu"] = request.form["instansi_ibu"] 
+                data_siswa.loc[nisn_edit, "Pendidikan Terakhir Ibu"]    = request.form["pendidikan_ibu"] 
+
+                data_siswa.loc[nisn_edit, "Jarak Rumah - Sekolah BI"]   = request.form["jarak_BI"] 
+                data_siswa.loc[nisn_edit, "Jarak Rumah - Sekolah TU"]   = request.form["jarak_TU"] 
+                
                 data_siswa.reset_index(inplace=True)
 
+                first_column = data_siswa.pop('Nama')
+                second_column = data_siswa.pop('Nama Panggilan')
+  
+                data_siswa.insert(0, 'Nama Panggilan', second_column)
+                data_siswa.insert(0, 'Nama', first_column)
 
-                data_siswa.to_excel("./data/data_siswa.xlsx", index=None)
-                with open("./data/data_siswa.xlsx", 'rb') as f:
+                data_siswa.to_excel("./tmp/data_siswa_edit.xlsx", index=None)
+                # data_siswa.to_excel("./tmp/data_siswa_edit.xlsx", index=None)
+                with open("./tmp/data_siswa_edit.xlsx", 'rb') as f:
                     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                
+                # image file
+                pas_foto = request.files["pas_foto"]
+                ijazah = request.files["ijazah"]
+                kk = request.files["kk"] 
+                akta_kelahiran = request.files["akta_kelahiran"] 
+
+                # Save foto
+                if pas_foto.filename != '':
+                    pas_foto_ext = pas_foto.filename.split(".")[1]
+                    pas_foto_name = "pas_foto.{}".format(pas_foto_ext)
+
+                    file_destination = "/".join([path_tmp, pas_foto_name])
+                    pas_foto.save(file_destination)
+                    with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
+                        dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(nisn_edit,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
+                
+                if ijazah.filename != '':
+                    ijazah_ext = ijazah.filename.split(".")[1]
+                    ijazah_name = "ijazah.{}".format(ijazah_ext)
+
+                    file_destination = "/".join([path_tmp, ijazah_name])
+                    ijazah.save(file_destination)
+                    with open("./tmp/{}".format(ijazah_name), 'rb') as f:
+                        dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(nisn_edit,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
+                
+                if kk.filename != '':
+                    kk_ext = kk.filename.split(".")[1]
+                    kk_name = "kk.{}".format(kk_ext)
+
+                    file_destination = "/".join([path_tmp, kk_name])
+                    kk.save(file_destination)
+                    with open("./tmp/{}".format(kk_name), 'rb') as f:
+                        dbx.files_upload(f.read(), "/dokumen/kartu_keluarga/{}.{}".format(nisn_edit,kk_ext), mode=dropbox.files.WriteMode.overwrite)
+
+                if akta_kelahiran.filename != '':
+                    akta_kelahiran_ext = akta_kelahiran.filename.split(".")[1]
+                    akta_kelahiran_name = "akta_kelahiran.{}".format(akta_kelahiran_ext)
+
+                    file_destination = "/".join([path_tmp, akta_kelahiran_name])
+                    akta_kelahiran.save(file_destination)
+                    with open("./tmp/{}".format(akta_kelahiran_name), 'rb') as f:
+                        dbx.files_upload(f.read(), "/dokumen/akta_kelahiran/{}.{}".format(nisn_edit,akta_kelahiran_ext), mode=dropbox.files.WriteMode.overwrite)
+                
                 return redirect(url_for("data_siswa"))
             elif dropout =="1":
                 # return "DO"
@@ -244,8 +384,10 @@ def edit_siswa():
                 with open("./data/data_siswa.xlsx", 'rb') as f:
                     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("data_siswa"))
-        return render_template("edit_siswa.html",kelas=kelas,list_kelas=list_kelas, nisn_edit=nisn_edit,
-                                        nama_edit=nama_edit, kelas_edit=kelas_edit)
+        return render_template("edit_siswa_new.html",kelas=kelas,list_kelas=list_kelas, nisn_edit=nisn_edit,
+                                        nama_edit=nama_edit, kelas_edit=kelas_edit, data_siswa_new=data_siswa_new,
+                                        pas_foto_name=pas_foto_name, ijazah_name=ijazah_name,
+                                        kk_name=kk_name, akta_name=akta_name)
 
     else:
         return redirect(url_for("login"))
@@ -258,31 +400,168 @@ def tambah_siswa():
             # Unduh
             # sent ./data/data_siswa_template.xlsx to user
 
-            kelas = request.form["kelas"]
+            # kelas = request.form["kelas"]
             try:
                 tambah = request.form["unggah"]
+                
                 if tambah =="1":
-                    file = request.files["file"]
-                    excel_name = file.filename
-                    file_destination = "/".join([path_nilai,excel_name])
-                    file.save(file_destination)
+                    
+                    bulk_upload = request.form["bulk_upload"]
 
-                    # Unggah
-                    # uploaded file is located at ./tmp/data_siswa_template.xlsx to
-                    new_data = pd.read_excel(file_destination)
+                    # return str(bulk_upload)
+                    if (bulk_upload == "1"):
+                        #upload bulk
+                        file = request.files["file_bulk"]
+                        excel_name = file.filename
+                        file_destination = "/".join([path_tmp,excel_name])
+                        file.save(file_destination)
+
+                        # # Unggah
+                        # # uploaded file is located at ./tmp/data_siswa_template.xlsx to
+                        new_data = pd.read_excel(file_destination)
+                        file_stream=stream_dropbox_file("/data_siswa.xlsx")
+                        data_siswa = pd.read_excel(file_stream)
+                        data_siswa = pd.concat([data_siswa, new_data], axis=0)
+
+                        data_siswa.to_excel("./tmp/data_siswa_bulk.xlsx", index=None)
+                        with open("./tmp/data_siswa_bulk.xlsx", 'rb') as f:
+                            dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                        # return "berhasil upload bulk"
+                        return redirect(url_for("data_siswa"))
+
+                    # data excel
+                    nama = request.form["nama"] 
+                    nama_panggilan = request.form["nama_panggilan"] 
+                    NISN = request.form["NISN"] 
+                    kelas = request.form["kelas"] 
+                    NIK = str(request.form["NIK"]) 
+
+                    TTL_siswa = request.form.get('TTL_siswa')
+                    jenis_kelamin = request.form.get("jenis_kelamin")
+                    agama_siswa = request.form["agama_siswa"] 
+                    status = request.form["status"] 
+                    anak_ke = request.form["anak_ke"] 
+                    alamat_siswa = request.form["alamat_siswa"] 
+                    koor_bujur = request.form["koor_bujur"] 
+                    koor_lintang = request.form["koor_lintang"] 
+                    telp_siswa = str(request.form["telp_siswa"]) 
+                    sekolah_asal = request.form["sekolah_asal"] 
+                    tinggi_badan = request.form["tinggi_badan"] 
+                    berat_badan = request.form["berat_badan"] 
+
+                    nama_ayah = request.form["nama_ayah"] 
+                    NIK_ayah = str(request.form["NIK_ayah"]) 
+                    TTL_ayah = request.form.get("TTL_ayah") 
+                    agama_ayah = request.form["agama_ayah"]
+                    alamat_ayah = request.form["alamat_ayah"] 
+                    telp_ayah = str(request.form["telp_ayah"]) 
+                    pekerjaan_ayah = request.form["pekerjaan_ayah"] 
+                    instansi_ayah = request.form["instansi_ayah"] 
+                    penghasilan = request.form.get("penghasilan") 
+                    pendidikan_ayah = request.form["pendidikan_ayah"] 
+
+                    nama_ibu = request.form["nama_ibu"] 
+                    NIK_ibu = str(request.form["NIK_ibu"]) 
+                    TTL_ibu = request.form.get("TTL_ibu")
+                    agama_ibu = request.form["agama_ibu"] 
+                    alamat_ibu = request.form["alamat_ibu"] 
+                    telp_ibu = str(request.form["telp_ibu"])
+                    pekerjaan_ibu = request.form["pekerjaan_ibu"] 
+                    instansi_ibu = request.form["instansi_ibu"] 
+                    pendidikan_ibu = request.form["pendidikan_ibu"] 
+
+                    jarak_BI = request.form["jarak_BI"] 
+                    jarak_TU = request.form["jarak_TU"] 
+
+
                     file_stream=stream_dropbox_file("/data_siswa.xlsx")
                     data_siswa = pd.read_excel(file_stream)
-                    data_siswa = pd.concat([data_siswa, new_data], axis=0)
 
-                    data_siswa.to_excel("./data/data_siswa.xlsx", index=None)
-                    # return redirect(url_for("data_siswa"))
-                    # return "gg"
-                    with open("./data/data_siswa.xlsx", 'rb') as f:
-                    # with open("./data/data_siswas_hasil.xlsx", 'rb') as f:    # untuk reset data
+                    data_siswa = data_siswa.append(
+                        {   'Nama': nama,                       'Nama Panggilan': nama_panggilan,       'NISN': NISN,
+                            'Kelas': kelas,                     'NIK': NIK,                             'Tempat, Tanggal Lahir': TTL_siswa,
+                            'Jenis Kelamin': jenis_kelamin,     'Agama': agama_siswa,                   'Status dalam Keluarga': status,
+                            'Anak ke': anak_ke,                 'Alamat Siswa': alamat_siswa,           'Koordinat Bujur': koor_bujur,
+                            'Koordinat Lintang': koor_lintang,  'Nomor Telepon/ hp siswa': telp_siswa,  'Sekolah Asal': sekolah_asal,
+                            'Tinggi Badan ': tinggi_badan,      'Berat Badan': berat_badan, 
+
+                            'Nama Ayah': nama_ayah,                     'NIK Ayah': NIK_ayah,                       'Tempat, Tanggal Lahir Ayah': TTL_ayah,     'Agama Ayah': agama_ayah,
+                            'Alamat Ayah': alamat_ayah,                 'Nomor Telepon/ HP Ayah': telp_ayah,        'Pekerjaan Ayah': pekerjaan_ayah,
+                            'Instansi Tempat Bekerja': instansi_ayah,   'Akumulasi Gaji Ayah dan Ibu': penghasilan, 'Pendidikan Terakhir ayah': pendidikan_ayah,
+
+                            'Nama Ibu': nama_ibu,               'NIK Ibu': NIK_ibu,                            'Tempat, Tanggal Lahir Ibu': TTL_ibu,
+                            'Agama Ibu': agama_ibu,             'Alamat Ibu': alamat_ibu,                      'No Tlp/ HP Ibu': telp_ibu,
+                            'Pekerjaan Ibu': pekerjaan_ibu,     'Instansi Tempat Bekerja Ibu': instansi_ibu,   'Pendidikan Terakhir Ibu': pendidikan_ibu,
+
+                            'Jarak Rumah - Sekolah BI': jarak_BI, 'Jarak Rumah - Sekolah TU': jarak_TU
+
+                        }, ignore_index=True)
+                    # data_siswa.to_excel("./tmp/data_siswa.xlsx", index=None)
+                    data_siswa.to_excel("./tmp/data_siswa_append.xlsx", index=None)
+
+                    # -- Untuk Upload Ke Dropbox --
+                    with open("./tmp/data_siswa_append.xlsx", 'rb') as f:
+                    # with open("./dev/data_siswa.xlsx", 'rb') as f:    # untuk reset data
                         dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+
+                    # image file
+                    pas_foto = request.files["pas_foto"]
+                    ijazah = request.files["ijazah"]
+                    kk = request.files["kk"] 
+                    akta_kelahiran = request.files["akta_kelahiran"] 
+
+                    # Save foto
+                    if pas_foto.filename != '':
+                        pas_foto_ext = pas_foto.filename.split(".")[1]
+                        pas_foto_name = "pas_foto.{}".format(pas_foto_ext)
+
+                        file_destination = "/".join([path_tmp, pas_foto_name])
+                        pas_foto.save(file_destination)
+                        with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
+                            dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(NISN,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
+                    
+                    if ijazah.filename != '':
+                        ijazah_ext = ijazah.filename.split(".")[1]
+                        ijazah_name = "ijazah.{}".format(ijazah_ext)
+
+                        file_destination = "/".join([path_tmp, ijazah_name])
+                        ijazah.save(file_destination)
+                        with open("./tmp/{}".format(ijazah_name), 'rb') as f:
+                            dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(NISN,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
+                    
+                    if kk.filename != '':
+                        kk_ext = kk.filename.split(".")[1]
+                        kk_name = "kk.{}".format(kk_ext)
+
+                        file_destination = "/".join([path_tmp, kk_name])
+                        kk.save(file_destination)
+                        with open("./tmp/{}".format(kk_name), 'rb') as f:
+                            dbx.files_upload(f.read(), "/dokumen/kartu_keluarga/{}.{}".format(NISN,kk_ext), mode=dropbox.files.WriteMode.overwrite)
+
+                    if akta_kelahiran.filename != '':
+                        akta_kelahiran_ext = akta_kelahiran.filename.split(".")[1]
+                        akta_kelahiran_name = "akta_kelahiran.{}".format(akta_kelahiran_ext)
+
+                        file_destination = "/".join([path_tmp, akta_kelahiran_name])
+                        akta_kelahiran.save(file_destination)
+                        with open("./tmp/{}".format(akta_kelahiran_name), 'rb') as f:
+                            dbx.files_upload(f.read(), "/dokumen/akta_kelahiran/{}.{}".format(NISN,akta_kelahiran_ext), mode=dropbox.files.WriteMode.overwrite)
+
+                    # return "berhasil upload"
                     return redirect(url_for("data_siswa"))
             except:
-                return render_template("tambah_siswa.html")
+                # return "masuk except, error di tambah single"
+                try:
+                    # return "masuk sini"
+                    bulk_upload = request.form["bulk_upload"]
+                    return render_template("tambah_siswa_new.html", bulk_upload=bulk_upload)
+                except:
+                    # return "heheee"
+                    return redirect(url_for("data_siswa"))
+                    
+                
+
+        return render_template("tambah_siswa_new.html", bulk_upload="0")
     else:
         return redirect(url_for("login"))
 
@@ -892,6 +1171,12 @@ def wali_rekap():
             # present nilai siswa
             nilai_siswa_sel = form_nilai.loc[[nisn_siswa]]
             komentar_siswa_sel = form_komentar.loc[nisn_siswa, "Komentar"]
+            try:
+                char_count = len(komentar_siswa_sel)
+            except:
+                char_count = 0
+
+            # return str(len(komentar_siswa_sel))
             if pd.isna(komentar_siswa_sel):
                 komentar_siswa_sel = ""
             nilai_sel = []
@@ -915,7 +1200,7 @@ def wali_rekap():
             # return str(nama_mapel)
             jlh_mapel = int((len(nama_mapel)))
             html= render_template("nilai_wali.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=nisn_siswa,
-                                        pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,
+                                        pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,char_count=char_count,
                                         eval_type=eval_type, nama_guru=session['nama_user'],jlh_mapel=jlh_mapel,jlh_nilai_sel=len(nilai_sel))
 
         if cetak_semua == "1":
@@ -925,6 +1210,10 @@ def wali_rekap():
             for siswa in range(len(list_siswa)):
                 nilai_siswa_sel = form_nilai.loc[[list_nisn[siswa]]]
                 komentar_siswa_sel = form_komentar.loc[list_nisn[siswa], "Komentar"]
+                try:
+                    char_count = len(komentar_siswa_sel)
+                except:
+                    char_count = 0
                 if pd.isna(komentar_siswa_sel):
                     komentar_siswa_sel = ""
                 nilai_sel = []
@@ -946,7 +1235,7 @@ def wali_rekap():
 
                 jlh_mapel = int((len(nama_mapel)))
                 html= render_template("nilai_wali.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=list_nisn[siswa],
-                                            pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,
+                                            pelajaran=pelajaran, kelas=kelas, semester=semester, nama_mapel=nama_mapel, komentar_siswa_sel=komentar_siswa_sel,char_count=char_count,
                                             eval_type=eval_type, nama_guru=session['nama_user'],jlh_mapel=jlh_mapel,jlh_nilai_sel=len(nilai_sel))
 
                 filename_pdf = "./nilai/{}_{}_Raport.pdf".format(list_siswa[siswa], list_nisn[siswa])
@@ -1074,6 +1363,10 @@ def mapel_rekap():
             # return str(nilai_siswa_sel)
             # return str(nisn_siswa)
             komentar_siswa_sel = form_komentar.loc[nisn_siswa,"Komentar"]
+            try:
+                char_count = len(komentar_siswa_sel)
+            except:
+                char_count = 0
             if pd.isna(komentar_siswa_sel):
                 komentar_siswa_sel = ""
             # return str((komentar))
@@ -1090,7 +1383,7 @@ def mapel_rekap():
                     nilai_sel.append(nilai_siswa_sel.iloc[0,i])
             # return str(nilai_sel)
             html= render_template("nilai_mapel.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=nisn_siswa,
-                                        pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi, komentar_siswa_sel=komentar_siswa_sel,
+                                        pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi, komentar_siswa_sel=komentar_siswa_sel,char_count=char_count,
                                         eval_type=eval_type, nama_guru=session['nama_user'],jlh_aspek=len(aspek_materi))
 
         if cetak_semua == "1":
@@ -1103,6 +1396,10 @@ def mapel_rekap():
                 # return str(nilai_siswa_sel)
                 # return str(nisn_siswa)
                 komentar_siswa_sel = form_komentar.loc[(list_nisn[siswa]),"Komentar"]
+                try:
+                    char_count = len(komentar_siswa_sel)
+                except:
+                    char_count = 0
                 if pd.isna(komentar_siswa_sel):
                     komentar_siswa_sel = ""
                 # return str((komentar))
@@ -1119,7 +1416,7 @@ def mapel_rekap():
                         nilai_sel.append(nilai_siswa_sel.iloc[0,i])
                 # return str(nilai_sel)
                 html= render_template("nilai_mapel.html",nilai_sel=nilai_sel, tahun_ajaran=tahun_ajaran, cetak="0",lihat=lihat, nisn_siswa=nisn_siswa,
-                                            pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi, komentar_siswa_sel=komentar_siswa_sel,
+                                            pelajaran=pelajaran, kelas=kelas, semester=semester, aspek_materi=aspek_materi, komentar_siswa_sel=komentar_siswa_sel,char_count=char_count,
                                             eval_type=eval_type, nama_guru=session['nama_user'],jlh_aspek=len(aspek_materi))
 
                 filename_pdf = "./nilai/{}_{}_{}.pdf".format(list_siswa[siswa], list_nisn[siswa], pelajaran)
@@ -1335,6 +1632,12 @@ def save_template_form_nilai(pelajaran, kelas, aspek_materi, eval_type):
     #     with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
     #         dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
 
+
+@app.route('/images/<path:filename>')
+def download_file(filename):
+    return send_from_directory(path_tmp, filename, as_attachment=True)
+
+
 @app.route("/clear")
 def clearSession():
     session.pop('user',None)
@@ -1360,6 +1663,43 @@ def download_template_data_siswa():
     # return filenames
     # send the file to user
     return send_from_directory(path_data, filename=filenames, as_attachment=True)
+
+# @app.route('/data-siswa/download/<string:filename>')
+# def download_foto_siswa(filename):
+#     path_data = os.path.join(APP_ROOT, 'data/')
+#     filenames = "data_siswa_template.xlsx"
+#     # return filenames
+#     # send the file to user
+#     return send_from_directory(path_t, filename=filenames, as_attachment=True)
+
+# dev only
+@app.route('/get-data-dev/<string:filename>')
+def getDataDev(filename):
+    # file_stream=stream_dropbox_file("/data_guru.xlsx")
+    # data = pd.read_excel(file_stream)
+    dbx.files_download_to_file("./dev/{}".format(filename), "/{}".format(filename))
+    # data = pd.read_excel("./tmp/data_guru.xlsx")
+    return filename
+
+@app.route('/del_foto/<string:filename>')
+def delFoto(filename):
+    try:
+        dbx.files_delete("/dokumen/pas_foto/{}".format(filename))
+    except:
+        pass
+    try:
+        dbx.files_delete("/dokumen/ijazah_sd/{}".format(filename))
+    except:
+        pass
+    try:
+        dbx.files_delete("/dokumen/kartu_keluarga/{}".format(filename))
+    except:
+        pass
+    try:
+        dbx.files_delete("/dokumen/akta_kelahiran/{}".format(filename))
+    except:
+        pass
+    return filename
 
 @app.after_request
 def add_header(r):

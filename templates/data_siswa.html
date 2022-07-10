@@ -29,12 +29,13 @@
     </div>
     <div class="container justify-content-end" id="role-select" style="margin-top: 40px;">
         <div class="container d-flex justify-content-end">
-            <form action="{{ url_for('tambah_siswa') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data >
+            <!-- <form action="{{ url_for('tambah_siswa') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data >
                 <div class="row">
                     <input type="hidden" id="list_kelas" name="list_kelas" value={{list_kelas}}>
                     <button type="submit" class="btn btn-outline-primary btn-lg" id="kelas" name="kelas" value="tambah" style="min-width: 200px;">Tambah Siswa</button>
                 </div>
-            </form>
+            </form> -->
+            <a href="{{ url_for('tambah_siswa')}}"  class="btn btn-outline-primary btn-md" style="min-width: 200px;" >Tambah Siswa</a>
         </div>
         &nbsp;
     </div>

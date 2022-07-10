@@ -138,3 +138,23 @@ hr {
     background: black;
     margin-bottom: 50px;
 }
+
+/* tambah siswa */
+.short-div {
+    height:50px;
+    display: flex;
+    align-items: center;
+  }
+
+.short-div input {
+    height: 35px; 
+    width: 100%;
+    /* background-color: salmon; */
+  }
+
+.short-div label {
+    height: 35px; 
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
