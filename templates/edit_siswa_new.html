@@ -415,98 +415,100 @@
             </div>
             
             <div class="row">
-                <div class="col-2">
+                <div class="col-3">
                     <div class="short-div">Ijazah SD</div>
                 </div>
+                <div class="col-3">
+                    <div class="short-div">:&nbsp; <input type="file" id="ijazah" name="ijazah"  accept="image/*"></div>
+                </div>
                 {% if ijazah_name =="" :%}
-                <div class="col-2">
+                <!-- <div class="col-2">
                     <div style="align-self: center;">
                         <img  src="/static/logo/noFile.png" width="160px" style="max-height:200px; border:1px solid #555; display: block;
                         margin-left: auto;
                         margin-right: auto;">
                     </div>
-                </div>
+                </div> -->
                 {% else :%}
-                <div class="col-2">
+                <!-- <div class="col-2">
                     <div style="align-self: center;">
                         <img  src="{{ url_for('download_file', filename=ijazah_name) }}" width="160px" style="max-height:200px; border:1px solid #555; display: block;
                         margin-left: auto;
                         margin-right: auto;">
                     </div>
-                </div>
-                <div class="col-2">
+                </div> -->
+                <div class="col-6">
                     <div class="short-div">
                         <a href="{{ url_for('download_file', filename=ijazah_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a> 
                     </div>
                 </div>
                 {% endif %}
                 
-                <div class="col-6">
-                    <div class="short-div">:&nbsp; <input type="file" id="ijazah" name="ijazah"  accept="image/*"></div>
-                </div>
             </div>
 
             <div class="row">
-                <div class="col-2">
+                <div class="col-3">
                     <div class="short-div">KK</div>
                 </div>
+                <div class="col-3">
+                    <div class="short-div">:&nbsp; <input type="file" id="kk" name="kk"  accept="image/*"></div>
+                </div>
                 {% if kk_name =="" :%}
-                <div class="col-2">
+                <!-- <div class="col-2">
                     <div style="align-self: center;">
                         <img  src="/static/logo/noFile.png" width="160px" style="max-height:200px; border:1px solid #555; display: block;
                         margin-left: auto;
                         margin-right: auto;">
                     </div>
-                </div>
+                </div> -->
                 {% else :%}
-                <div class="col-2">
+                <!-- <div class="col-2">
                     <div style="align-self: center;">
                         <img  src="{{ url_for('download_file', filename=kk_name) }}" width="160px" style="max-height:200px; border:1px solid #555; display: block;
                         margin-left: auto;
                         margin-right: auto;">
                     </div>
-                </div>
-                <div class="col-2">
+                </div> -->
+                <div class="col-6">
                     <div class="short-div">
                         <a href="{{ url_for('download_file', filename=kk_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a> 
                     </div>
                 </div>
                 {% endif %}
                 
-                <div class="col-6">
-                    <div class="short-div">:&nbsp; <input type="file" id="kk" name="kk"  accept="image/*"></div>
-                </div>
+                
             </div>
 
             <div class="row">
-                <div class="col-2">
+                <div class="col-3">
                     <div class="short-div">Akta Kelahiran</div>
                 </div>
+                <div class="col-3">
+                    <div class="short-div">:&nbsp; <input type="file" id="akta_kelahiran" name="akta_kelahiran"  accept="image/*"></div>
+                </div>
                 {% if akta_name =="" :%}
-                <div class="col-2">
+                <!-- <div class="col-2">
                     <div style="align-self: center;">
                         <img  src="/static/logo/noFile.png" width="160px" style="max-height:200px; border:1px solid #555; display: block;
                         margin-left: auto;
                         margin-right: auto;">
                     </div>
-                </div>
+                </div> -->
                 {% else :%}
-                <div class="col-2">
+                <!-- <div class="col-2">
                     <div style="align-self: center;">
                         <img  src="{{ url_for('download_file', filename=akta_name) }}" width="160px" style="max-height:200px; border:1px solid #555; display: block;
                         margin-left: auto;
                         margin-right: auto;">
                     </div>
-                </div>
-                <div class="col-2">
+                </div> -->
+                <div class="col-6">
                     <div class="short-div">
                         <a href="{{ url_for('download_file', filename=akta_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a> 
                     </div>
                 </div>
                 {% endif %}
-                <div class="col-6">
-                    <div class="short-div">:&nbsp; <input type="file" id="akta_kelahiran" name="akta_kelahiran"  accept="image/*"></div>
-                </div>
+                
             </div>
 
             <div class="row" style="margin: 20px 0px;">
