@@ -1151,9 +1151,9 @@ def wali_rekap():
                 kls = data_siswa.loc[i,"Kelas"]
                 new_kls = update_kelas(nm, kls, checked_siswa)
                 data_siswa.loc[i,"Kelas"] = new_kls
-            # data_siswa.to_excel("./data/data_siswa_updated.xlsx", index=None)
-            # with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
-            #     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            data_siswa.to_excel("./data/data_siswa_updated.xlsx", index=None)
+            with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
+                dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
             return redirect(url_for("role"))
 
         if save_komentar=="1":
