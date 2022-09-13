@@ -178,7 +178,7 @@ def data_siswa():
                 # kelas = "VII" #Input
                 # load data siswa
                 file_stream=stream_dropbox_file("/data_siswa.xlsx")
-                data_siswa = pd.read_excel(file_stream)
+                data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
                 data_kelas = data_siswa[data_siswa["Kelas"] == kelas]
                 list_nisn = data_kelas["NISN"].tolist()
                 list_siswa = data_kelas["Nama"].tolist()
@@ -190,7 +190,7 @@ def data_siswa():
         # 9 Halaman Data Siswa
         # load data siswa
         file_stream=stream_dropbox_file("/data_siswa.xlsx")
-        data_siswa = pd.read_excel(file_stream)
+        data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
         list_kelas = data_siswa["Kelas"].unique()
         list_kelas = list(list_kelas)
         # for kelas in list_kelas:
@@ -211,7 +211,7 @@ def edit_siswa():
                 dropout = request.form["dropout"]
             except:
                 dropout = "0"
-            
+
             kelas_edit = request.form["kelas_siswa"]
             nisn_edit = int(request.form["nisn_siswa"])
             nama_edit = request.form["nama_siswa"]
@@ -219,12 +219,12 @@ def edit_siswa():
             kelas = request.form['kelas']
 
             file_stream=stream_dropbox_file("/data_siswa.xlsx")
-            data_siswa = pd.read_excel(file_stream)
+            data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
             # nisn = 72100585
             # nama = "Agus Ahmad"  # <from input>
             # kelas = "VII"    # <from input>
 
-            # Get Detail from database for edit page 
+            # Get Detail from database for edit page
             data_siswa_new = data_siswa.fillna('')
             data_siswa_new = data_siswa_new.loc[data_siswa_new['NISN'] == nisn_edit].values.flatten().tolist()
             # return str(int(data_siswa_new[4]))
@@ -241,33 +241,33 @@ def edit_siswa():
                 for i in range(len(pas_foto_list.entries)):
                     file_name = pas_foto_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
-                        pas_foto_name = "pas_foto_{}".format(file_name) 
+                        pas_foto_name = "pas_foto_{}".format(file_name)
                         dbx.files_download_to_file("./tmp/{}".format(pas_foto_name), "/dokumen/pas_foto/{}".format(file_name))
-                
+
                 ijazah_list = dbx.files_list_folder(path="/dokumen/ijazah_sd")
                 for i in range(len(ijazah_list.entries)):
                     file_name = ijazah_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
-                        ijazah_name = "ijazah_{}".format(file_name) 
+                        ijazah_name = "ijazah_{}".format(file_name)
                         dbx.files_download_to_file("./tmp/{}".format(ijazah_name), "/dokumen/ijazah_sd/{}".format(file_name))
 
-                
+
                 kk_list = dbx.files_list_folder(path="/dokumen/kartu_keluarga")
                 for i in range(len(kk_list.entries)):
                     file_name = kk_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
-                        kk_name = "kartu_keluarga{}".format(file_name) 
+                        kk_name = "kartu_keluarga{}".format(file_name)
                         dbx.files_download_to_file("./tmp/{}".format(kk_name), "/dokumen/kartu_keluarga/{}".format(file_name))
-                
+
                 akta_list = dbx.files_list_folder(path="/dokumen/akta_kelahiran")
                 for i in range(len(akta_list.entries)):
                     file_name = akta_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
-                        akta_name = "akta_kelahiran_{}".format(file_name) 
+                        akta_name = "akta_kelahiran_{}".format(file_name)
                         dbx.files_download_to_file("./tmp/{}".format(akta_name), "/dokumen/akta_kelahiran/{}".format(file_name))
-            
+
             data_siswa.set_index("NISN", inplace=True)
-                
+
             # return str(data_siswa_new[0])
 
             if save_edit=="1":
@@ -275,53 +275,53 @@ def edit_siswa():
                 # return str(kelas_edit+" "+nama_edit)
                 # Tombol Edit
                 data_siswa.loc[nisn_edit, "Nama"]           = nama_edit
-                data_siswa.loc[nisn_edit, "Nama Panggilan"] = request.form["nama_panggilan"] 
+                data_siswa.loc[nisn_edit, "Nama Panggilan"] = request.form["nama_panggilan"]
                 # data_siswa.loc[nisn_edit, "NISN"]           = nisn_edit
                 data_siswa.loc[nisn_edit, "Kelas"]          = kelas_edit
-                data_siswa.loc[nisn_edit, "NIK"]            = str(request.form["NIK"]) 
+                data_siswa.loc[nisn_edit, "NIK"]            = str(request.form["NIK"])
 
                 data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir"]  = request.form.get('TTL_siswa')
                 data_siswa.loc[nisn_edit, "Jenis Kelamin"]          = request.form.get("jenis_kelamin")
-                data_siswa.loc[nisn_edit, "Agama"]                  = request.form["agama_siswa"] 
-                data_siswa.loc[nisn_edit, "Status dalam Keluarga"]  = request.form["status"] 
-                data_siswa.loc[nisn_edit, "Anak ke"]                = request.form["anak_ke"] 
-                data_siswa.loc[nisn_edit, "Alamat Siswa"]           = request.form["alamat_siswa"] 
-                data_siswa.loc[nisn_edit, "Koordinat Bujur"]        = request.form["koor_bujur"] 
-                data_siswa.loc[nisn_edit, "Koordinat Lintang"]      = request.form["koor_lintang"] 
+                data_siswa.loc[nisn_edit, "Agama"]                  = request.form["agama_siswa"]
+                data_siswa.loc[nisn_edit, "Status dalam Keluarga"]  = request.form["status"]
+                data_siswa.loc[nisn_edit, "Anak ke"]                = request.form["anak_ke"]
+                data_siswa.loc[nisn_edit, "Alamat Siswa"]           = request.form["alamat_siswa"]
+                data_siswa.loc[nisn_edit, "Koordinat Bujur"]        = request.form["koor_bujur"]
+                data_siswa.loc[nisn_edit, "Koordinat Lintang"]      = request.form["koor_lintang"]
                 data_siswa.loc[nisn_edit, "Nomor Telepon/ hp siswa"] = str(request.form["telp_siswa"])
-                data_siswa.loc[nisn_edit, "Sekolah Asal"]           = request.form["sekolah_asal"] 
-                data_siswa.loc[nisn_edit, "Tinggi Badan "]          = request.form["tinggi_badan"] 
-                data_siswa.loc[nisn_edit, "Berat Badan"]            = request.form["berat_badan"] 
+                data_siswa.loc[nisn_edit, "Sekolah Asal"]           = request.form["sekolah_asal"]
+                data_siswa.loc[nisn_edit, "Tinggi Badan "]          = request.form["tinggi_badan"]
+                data_siswa.loc[nisn_edit, "Berat Badan"]            = request.form["berat_badan"]
 
                 data_siswa.loc[nisn_edit, "Nama Ayah"]                  = request.form["nama_ayah"]
-                data_siswa.loc[nisn_edit, "NIK Ayah"]                   = str(request.form["NIK_ayah"]) 
-                data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir Ayah"] = request.form.get("TTL_ayah") 
+                data_siswa.loc[nisn_edit, "NIK Ayah"]                   = str(request.form["NIK_ayah"])
+                data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir Ayah"] = request.form.get("TTL_ayah")
                 data_siswa.loc[nisn_edit, "Agama Ayah"]                 = request.form["agama_ayah"]
-                data_siswa.loc[nisn_edit, "Alamat Ayah"]                = request.form["alamat_ayah"] 
-                data_siswa.loc[nisn_edit, "Nomor Telepon/ HP Ayah"]     = str(request.form["telp_ayah"]) 
-                data_siswa.loc[nisn_edit, "Pekerjaan Ayah"]             = request.form["pekerjaan_ayah"] 
+                data_siswa.loc[nisn_edit, "Alamat Ayah"]                = request.form["alamat_ayah"]
+                data_siswa.loc[nisn_edit, "Nomor Telepon/ HP Ayah"]     = str(request.form["telp_ayah"])
+                data_siswa.loc[nisn_edit, "Pekerjaan Ayah"]             = request.form["pekerjaan_ayah"]
                 data_siswa.loc[nisn_edit, "Instansi Tempat Bekerja"]    = request.form["instansi_ayah"]
-                data_siswa.loc[nisn_edit, "Akumulasi Gaji Ayah dan Ibu"] = request.form.get("penghasilan") 
-                data_siswa.loc[nisn_edit, "Pendidikan Terakhir ayah"]   = request.form["pendidikan_ayah"] 
-                
-                data_siswa.loc[nisn_edit, "Nama Ibu"]                   = request.form["nama_ibu"] 
-                data_siswa.loc[nisn_edit, "NIK Ibu"]                    = str(request.form["NIK_ibu"]) 
-                data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir Ibu"]  = request.form.get("TTL_ibu")
-                data_siswa.loc[nisn_edit, "Agama Ibu"]                  = request.form["agama_ibu"] 
-                data_siswa.loc[nisn_edit, "Alamat Ibu"]                 = request.form["alamat_ibu"] 
-                data_siswa.loc[nisn_edit, "No Tlp/ HP Ibu"]             = str(request.form["telp_ibu"])
-                data_siswa.loc[nisn_edit, "Pekerjaan Ibu"]              = request.form["pekerjaan_ibu"] 
-                data_siswa.loc[nisn_edit, "Instansi Tempat Bekerja Ibu"] = request.form["instansi_ibu"] 
-                data_siswa.loc[nisn_edit, "Pendidikan Terakhir Ibu"]    = request.form["pendidikan_ibu"] 
+                data_siswa.loc[nisn_edit, "Akumulasi Gaji Ayah dan Ibu"] = request.form.get("penghasilan")
+                data_siswa.loc[nisn_edit, "Pendidikan Terakhir ayah"]   = request.form["pendidikan_ayah"]
 
-                data_siswa.loc[nisn_edit, "Jarak Rumah - Sekolah BI"]   = request.form["jarak_BI"] 
-                data_siswa.loc[nisn_edit, "Jarak Rumah - Sekolah TU"]   = request.form["jarak_TU"] 
-                
+                data_siswa.loc[nisn_edit, "Nama Ibu"]                   = request.form["nama_ibu"]
+                data_siswa.loc[nisn_edit, "NIK Ibu"]                    = str(request.form["NIK_ibu"])
+                data_siswa.loc[nisn_edit, "Tempat, Tanggal Lahir Ibu"]  = request.form.get("TTL_ibu")
+                data_siswa.loc[nisn_edit, "Agama Ibu"]                  = request.form["agama_ibu"]
+                data_siswa.loc[nisn_edit, "Alamat Ibu"]                 = request.form["alamat_ibu"]
+                data_siswa.loc[nisn_edit, "No Tlp/ HP Ibu"]             = str(request.form["telp_ibu"])
+                data_siswa.loc[nisn_edit, "Pekerjaan Ibu"]              = request.form["pekerjaan_ibu"]
+                data_siswa.loc[nisn_edit, "Instansi Tempat Bekerja Ibu"] = request.form["instansi_ibu"]
+                data_siswa.loc[nisn_edit, "Pendidikan Terakhir Ibu"]    = request.form["pendidikan_ibu"]
+
+                data_siswa.loc[nisn_edit, "Jarak Rumah - Sekolah BI"]   = request.form["jarak_BI"]
+                data_siswa.loc[nisn_edit, "Jarak Rumah - Sekolah TU"]   = request.form["jarak_TU"]
+
                 data_siswa.reset_index(inplace=True)
 
                 first_column = data_siswa.pop('Nama')
                 second_column = data_siswa.pop('Nama Panggilan')
-  
+
                 data_siswa.insert(0, 'Nama Panggilan', second_column)
                 data_siswa.insert(0, 'Nama', first_column)
 
@@ -329,12 +329,12 @@ def edit_siswa():
                 # data_siswa.to_excel("./tmp/data_siswa_edit.xlsx", index=None)
                 with open("./tmp/data_siswa_edit.xlsx", 'rb') as f:
                     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
-                
+
                 # image file
                 pas_foto = request.files["pas_foto"]
                 ijazah = request.files["ijazah"]
-                kk = request.files["kk"] 
-                akta_kelahiran = request.files["akta_kelahiran"] 
+                kk = request.files["kk"]
+                akta_kelahiran = request.files["akta_kelahiran"]
 
                 # Save foto
                 if pas_foto.filename != '':
@@ -345,7 +345,7 @@ def edit_siswa():
                     pas_foto.save(file_destination)
                     with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
                         dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(nisn_edit,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
-                
+
                 if ijazah.filename != '':
                     ijazah_ext = ijazah.filename.split(".")[1]
                     ijazah_name = "ijazah.{}".format(ijazah_ext)
@@ -354,7 +354,7 @@ def edit_siswa():
                     ijazah.save(file_destination)
                     with open("./tmp/{}".format(ijazah_name), 'rb') as f:
                         dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(nisn_edit,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
-                
+
                 if kk.filename != '':
                     kk_ext = kk.filename.split(".")[1]
                     kk_name = "kk.{}".format(kk_ext)
@@ -372,7 +372,7 @@ def edit_siswa():
                     akta_kelahiran.save(file_destination)
                     with open("./tmp/{}".format(akta_kelahiran_name), 'rb') as f:
                         dbx.files_upload(f.read(), "/dokumen/akta_kelahiran/{}.{}".format(nisn_edit,akta_kelahiran_ext), mode=dropbox.files.WriteMode.overwrite)
-                
+
                 return redirect(url_for("data_siswa"))
             elif dropout =="1":
                 # return "DO"
@@ -403,9 +403,9 @@ def tambah_siswa():
             # kelas = request.form["kelas"]
             try:
                 tambah = request.form["unggah"]
-                
+
                 if tambah =="1":
-                    
+
                     bulk_upload = request.form["bulk_upload"]
 
                     # return str(bulk_upload)
@@ -420,7 +420,7 @@ def tambah_siswa():
                         # # uploaded file is located at ./tmp/data_siswa_template.xlsx to
                         new_data = pd.read_excel(file_destination)
                         file_stream=stream_dropbox_file("/data_siswa.xlsx")
-                        data_siswa = pd.read_excel(file_stream)
+                        data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
                         data_siswa = pd.concat([data_siswa, new_data], axis=0)
 
                         data_siswa.to_excel("./tmp/data_siswa_bulk.xlsx", index=None)
@@ -430,52 +430,52 @@ def tambah_siswa():
                         return redirect(url_for("data_siswa"))
 
                     # data excel
-                    nama = request.form["nama"] 
-                    nama_panggilan = request.form["nama_panggilan"] 
-                    NISN = request.form["NISN"] 
-                    kelas = request.form["kelas"] 
-                    NIK = str(request.form["NIK"]) 
+                    nama = request.form["nama"]
+                    nama_panggilan = request.form["nama_panggilan"]
+                    NISN = request.form["NISN"]
+                    kelas = request.form["kelas"]
+                    NIK = str(request.form["NIK"])
 
                     TTL_siswa = request.form.get('TTL_siswa')
                     jenis_kelamin = request.form.get("jenis_kelamin")
-                    agama_siswa = request.form["agama_siswa"] 
-                    status = request.form["status"] 
-                    anak_ke = request.form["anak_ke"] 
-                    alamat_siswa = request.form["alamat_siswa"] 
-                    koor_bujur = request.form["koor_bujur"] 
-                    koor_lintang = request.form["koor_lintang"] 
-                    telp_siswa = str(request.form["telp_siswa"]) 
-                    sekolah_asal = request.form["sekolah_asal"] 
-                    tinggi_badan = request.form["tinggi_badan"] 
-                    berat_badan = request.form["berat_badan"] 
+                    agama_siswa = request.form["agama_siswa"]
+                    status = request.form["status"]
+                    anak_ke = request.form["anak_ke"]
+                    alamat_siswa = request.form["alamat_siswa"]
+                    koor_bujur = request.form["koor_bujur"]
+                    koor_lintang = request.form["koor_lintang"]
+                    telp_siswa = str(request.form["telp_siswa"])
+                    sekolah_asal = request.form["sekolah_asal"]
+                    tinggi_badan = request.form["tinggi_badan"]
+                    berat_badan = request.form["berat_badan"]
 
-                    nama_ayah = request.form["nama_ayah"] 
-                    NIK_ayah = str(request.form["NIK_ayah"]) 
-                    TTL_ayah = request.form.get("TTL_ayah") 
+                    nama_ayah = request.form["nama_ayah"]
+                    NIK_ayah = str(request.form["NIK_ayah"])
+                    TTL_ayah = request.form.get("TTL_ayah")
                     agama_ayah = request.form["agama_ayah"]
-                    alamat_ayah = request.form["alamat_ayah"] 
-                    telp_ayah = str(request.form["telp_ayah"]) 
-                    pekerjaan_ayah = request.form["pekerjaan_ayah"] 
-                    instansi_ayah = request.form["instansi_ayah"] 
-                    penghasilan = request.form.get("penghasilan") 
-                    pendidikan_ayah = request.form["pendidikan_ayah"] 
+                    alamat_ayah = request.form["alamat_ayah"]
+                    telp_ayah = str(request.form["telp_ayah"])
+                    pekerjaan_ayah = request.form["pekerjaan_ayah"]
+                    instansi_ayah = request.form["instansi_ayah"]
+                    penghasilan = request.form.get("penghasilan")
+                    pendidikan_ayah = request.form["pendidikan_ayah"]
 
-                    nama_ibu = request.form["nama_ibu"] 
-                    NIK_ibu = str(request.form["NIK_ibu"]) 
+                    nama_ibu = request.form["nama_ibu"]
+                    NIK_ibu = str(request.form["NIK_ibu"])
                     TTL_ibu = request.form.get("TTL_ibu")
-                    agama_ibu = request.form["agama_ibu"] 
-                    alamat_ibu = request.form["alamat_ibu"] 
+                    agama_ibu = request.form["agama_ibu"]
+                    alamat_ibu = request.form["alamat_ibu"]
                     telp_ibu = str(request.form["telp_ibu"])
-                    pekerjaan_ibu = request.form["pekerjaan_ibu"] 
-                    instansi_ibu = request.form["instansi_ibu"] 
-                    pendidikan_ibu = request.form["pendidikan_ibu"] 
+                    pekerjaan_ibu = request.form["pekerjaan_ibu"]
+                    instansi_ibu = request.form["instansi_ibu"]
+                    pendidikan_ibu = request.form["pendidikan_ibu"]
 
-                    jarak_BI = request.form["jarak_BI"] 
-                    jarak_TU = request.form["jarak_TU"] 
+                    jarak_BI = request.form["jarak_BI"]
+                    jarak_TU = request.form["jarak_TU"]
 
 
                     file_stream=stream_dropbox_file("/data_siswa.xlsx")
-                    data_siswa = pd.read_excel(file_stream)
+                    data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
 
                     data_siswa = data_siswa.append(
                         {   'Nama': nama,                       'Nama Panggilan': nama_panggilan,       'NISN': NISN,
@@ -483,7 +483,7 @@ def tambah_siswa():
                             'Jenis Kelamin': jenis_kelamin,     'Agama': agama_siswa,                   'Status dalam Keluarga': status,
                             'Anak ke': anak_ke,                 'Alamat Siswa': alamat_siswa,           'Koordinat Bujur': koor_bujur,
                             'Koordinat Lintang': koor_lintang,  'Nomor Telepon/ hp siswa': telp_siswa,  'Sekolah Asal': sekolah_asal,
-                            'Tinggi Badan ': tinggi_badan,      'Berat Badan': berat_badan, 
+                            'Tinggi Badan ': tinggi_badan,      'Berat Badan': berat_badan,
 
                             'Nama Ayah': nama_ayah,                     'NIK Ayah': NIK_ayah,                       'Tempat, Tanggal Lahir Ayah': TTL_ayah,     'Agama Ayah': agama_ayah,
                             'Alamat Ayah': alamat_ayah,                 'Nomor Telepon/ HP Ayah': telp_ayah,        'Pekerjaan Ayah': pekerjaan_ayah,
@@ -507,8 +507,8 @@ def tambah_siswa():
                     # image file
                     pas_foto = request.files["pas_foto"]
                     ijazah = request.files["ijazah"]
-                    kk = request.files["kk"] 
-                    akta_kelahiran = request.files["akta_kelahiran"] 
+                    kk = request.files["kk"]
+                    akta_kelahiran = request.files["akta_kelahiran"]
 
                     # Save foto
                     if pas_foto.filename != '':
@@ -519,7 +519,7 @@ def tambah_siswa():
                         pas_foto.save(file_destination)
                         with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
                             dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(NISN,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
-                    
+
                     if ijazah.filename != '':
                         ijazah_ext = ijazah.filename.split(".")[1]
                         ijazah_name = "ijazah.{}".format(ijazah_ext)
@@ -528,7 +528,7 @@ def tambah_siswa():
                         ijazah.save(file_destination)
                         with open("./tmp/{}".format(ijazah_name), 'rb') as f:
                             dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(NISN,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
-                    
+
                     if kk.filename != '':
                         kk_ext = kk.filename.split(".")[1]
                         kk_name = "kk.{}".format(kk_ext)
@@ -558,8 +558,8 @@ def tambah_siswa():
                 except:
                     # return "heheee"
                     return redirect(url_for("data_siswa"))
-                    
-                
+
+
 
         return render_template("tambah_siswa_new.html", bulk_upload="0")
     else:
@@ -892,7 +892,7 @@ def role_wali_menu():
                 # create file rekap nilai
                 # load data siswa
                 file_stream=stream_dropbox_file("/data_siswa.xlsx")
-                data_siswa = pd.read_excel(file_stream)
+                data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
                 form_nilai = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
                 form_nilai.reset_index(inplace=True, drop=True)
                 for mpl in mapel:
@@ -1144,7 +1144,7 @@ def wali_rekap():
             # return str(len(checked_siswa))
             # update kelas
             file_stream=stream_dropbox_file("/data_siswa.xlsx")
-            data_siswa = pd.read_excel(file_stream)
+            data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
             # checked_siswa = ["Agus Ahmad", "Ajat Wahyudin"]
             for i in range(data_siswa.shape[0]):
                 nm = data_siswa.loc[i,"Nama"]
@@ -1589,7 +1589,7 @@ def save_template_form_nilai(pelajaran, kelas, aspek_materi, eval_type):
     # 5. Unduh dan unggah form nilai
     # load data siswa
     file_stream=stream_dropbox_file("/data_siswa.xlsx")
-    data_siswa = pd.read_excel(file_stream)
+    data_siswa = pd.read_excel(file_stream, converters={'NISN': str})
     # define aspek penilaian
     aspek_lain = ["Spiritual_Predikat", "Sosial_Predikat"]
     aspek_materi = aspek_materi.split(";")
