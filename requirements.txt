@@ -5,3 +5,4 @@ pdfkit
 dropbox
 pandas
 numpy
+openpyxl
