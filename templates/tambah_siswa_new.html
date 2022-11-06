@@ -28,7 +28,7 @@
                 <h4>Unduh template data siswa</h4>
             </div>
             <div class="col-2">
-                <a href="{{ url_for('download_template_data_siswa')}}"  class="btn btn-primary btn-md" style="width: 150px;" >Unduh template</a>
+                <a href="{{ url_for('download_from_directory', source='data', filename='data_siswa_template.xlsx')}}"  class="btn btn-primary btn-md" style="width: 150px;" >Unduh template</a>
             </div>
         </div>
     </div>
@@ -94,12 +94,28 @@
             &nbsp;
             <div class="row">
                 <div class="col-3">
+                    <div class="short-div">Tempat lahir</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tmpt_lhr_siswa" name="tmpt_lhr_siswa" type="text" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="short-div">Tanggal lahir</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tgl_lhr_siswa" name="tgl_lhr_siswa" type="date" ></div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-3">
                     <div class="short-div">Tempat, tanggal lahir</div>
                 </div>
                 <div class="col-9">
                     <div class="short-div">:&nbsp; <input class="form-control" id="TTL_siswa" name="TTL_siswa" type="date" ></div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="row">
                 <div class="col-3">
@@ -225,12 +241,28 @@
             
             <div class="row">
                 <div class="col-3">
+                    <div class="short-div">Tempat lahir ayah</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tmpt_lhr_ayah" name="tmpt_lhr_ayah" type="text" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="short-div">Tanggal lahir ayah</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tgl_lhr_ayah" name="tgl_lhr_ayah" type="date" ></div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-3">
                     <div class="short-div">Tempat, tanggal lahir</div>
                 </div>
                 <div class="col-9">
                     <div class="short-div">:&nbsp; <input class="form-control" id="TTL_ayah" name="TTL_ayah" type="date" ></div>
                 </div>
-            </div>
+            </div> -->
             
             <div class="row">
                 <div class="col-3">
@@ -324,12 +356,28 @@
             
             <div class="row">
                 <div class="col-3">
+                    <div class="short-div">Tempat lahir ibu</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tmpt_lhr_ibu" name="tmpt_lhr_ibu" type="text" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="short-div">Tanggal lahir ibu</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tgl_lhr_ibu" name="tgl_lhr_ibu" type="date" ></div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-3">
                     <div class="short-div">Tempat, tanggal lahir</div>
                 </div>
                 <div class="col-9">
                     <div class="short-div">:&nbsp; <input class="form-control" id="TTL_ibu" name="TTL_ibu" type="date" ></div>
                 </div>
-            </div>
+            </div> -->
             
             <div class="row">
                 <div class="col-3">

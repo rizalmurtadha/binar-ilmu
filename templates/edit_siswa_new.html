@@ -22,9 +22,10 @@
                         margin-left: auto;
                         margin-right: auto;">
                         {% else :%}
-                        <img  src="{{ url_for('download_file', filename=pas_foto_name) }}" width="160px" style="max-height:200px; border:1px solid #555; display: block;
-                        margin-left: auto;
-                        margin-right: auto;">
+                        <!-- <img  src="{{ url_for('download_file', filename=pas_foto_name) }}" width="160px" style="max-height:200px; border:1px solid #555; display: block;
+                        margin-left: auto; margin-right: auto;"> -->
+                        <img  src="{{ url_for('download_from_directory', source='tmp', filename=pas_foto_name) }}" width="160px" style="max-height:200px; border:1px solid #555; display: block;
+                        margin-left: auto; margin-right: auto;">
                         {% endif %}
                     </div>
                     &nbsp;
@@ -52,14 +53,31 @@
                 </div>
             </div>
             &nbsp;
+
             <div class="row">
+                <div class="col-3">
+                    <div class="short-div">Tempat lahir</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tmpt_lhr_siswa" name="tmpt_lhr_siswa" type="text" value="{{ data_siswa_new[5] }}" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="short-div">Tanggal lahir</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tgl_lhr_siswa" name="tgl_lhr_siswa" type="date" value="{{ data_siswa_new[6] }}" ></div>
+                </div>
+            </div>
+            <!-- <div class="row">
                 <div class="col-3">
                     <div class="short-div">Tempat, tanggal lahir</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="TTL_siswa" name="TTL_siswa" type="date" value="{{ data_siswa_new[5] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="TTL_siswa" name="TTL_siswa" type="date" value="{{ data_siswa_new[7] }}" ></div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="row">
                 <div class="col-3">
@@ -67,12 +85,12 @@
                 </div>
                 <div class="col-9">
                     <div class="short-div">:&nbsp; 
-                        {% if data_siswa_new[6] == "Laki-laki" :%}
+                        {% if data_siswa_new[8] == "Laki-laki" or data_siswa_new[8] == "L"   :%}
                             <input class="form-control" type="radio" id="jenis_kelamin" name="jenis_kelamin" value="Laki-laki" checked="checked">
                             <label for="Laki-laki" >Laki-laki</label>
                             <input class="form-control" type="radio" id="jenis_kelamin" name="jenis_kelamin" value="Perempuan" >
                             <label  for="Perempuan" >Perempuan</label>
-                        {% elif data_siswa_new[6] == "Perempuan" :%}
+                        {% elif data_siswa_new[8] == "Perempuan" or data_siswa_new[8] == "P"  :%}
                             <input class="form-control" type="radio" id="jenis_kelamin" name="jenis_kelamin" value="Laki-laki" >
                             <label for="Laki-laki" >Laki-laki</label>
                             <input class="form-control" type="radio" id="jenis_kelamin" name="jenis_kelamin" value="Perempuan" checked="checked">
@@ -93,7 +111,7 @@
                     <div class="short-div">Agama</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="agama_siswa" name="agama_siswa" type="text" value="{{ data_siswa_new[7] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="agama_siswa" name="agama_siswa" type="text" value="{{ data_siswa_new[9] }}" ></div>
                 </div>
             </div>
             
@@ -102,7 +120,7 @@
                     <div class="short-div">Status dalam keluarga</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="status" name="status" type="text" value="{{ data_siswa_new[8] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="status" name="status" type="text" value="{{ data_siswa_new[10] }}" ></div>
                 </div>
             </div>
             
@@ -111,7 +129,7 @@
                     <div class="short-div">Anak ke-</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="anak_ke" name="anak_ke" type="text" value="{{ data_siswa_new[9] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="anak_ke" name="anak_ke" type="text" value="{{ data_siswa_new[11] }}" ></div>
                 </div>
             </div>
             
@@ -120,7 +138,7 @@
                     <div class="short-div">Alamat siswa</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="alamat_siswa" name="alamat_siswa" type="text" value="{{ data_siswa_new[10] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="alamat_siswa" name="alamat_siswa" type="text" value="{{ data_siswa_new[12] }}" ></div>
                 </div>
             </div>
             
@@ -129,7 +147,7 @@
                     <div class="short-div">Koordinat bujur</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="koor_bujur" name="koor_bujur" type="text" value="{{ data_siswa_new[11] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="koor_bujur" name="koor_bujur" type="text" value="{{ data_siswa_new[13] }}" ></div>
                 </div>
             </div>
             
@@ -138,7 +156,7 @@
                     <div class="short-div">Koordinat Lintang</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="koor_lintang" name="koor_lintang" type="text" value="{{ data_siswa_new[12] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="koor_lintang" name="koor_lintang" type="text" value="{{ data_siswa_new[14] }}" ></div>
                 </div>
             </div>
             
@@ -147,7 +165,7 @@
                     <div class="short-div">Nomor Telepon/hp siswa </div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="telp_siswa" name="telp_siswa" type="text" value="{{ data_siswa_new[13] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="telp_siswa" name="telp_siswa" type="text" value="{{ data_siswa_new[15] }}" ></div>
                 </div>
             </div>
             
@@ -156,7 +174,7 @@
                     <div class="short-div">Sekolah Asal</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="sekolah_asal" name="sekolah_asal" type="text" value="{{ data_siswa_new[14] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="sekolah_asal" name="sekolah_asal" type="text" value="{{ data_siswa_new[16] }}" ></div>
                 </div>
             </div>
             
@@ -165,7 +183,7 @@
                     <div class="short-div">Tinggi Badan</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="tinggi_badan" name="tinggi_badan" type="text" value="{{ data_siswa_new[15] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tinggi_badan" name="tinggi_badan" type="text" value="{{ data_siswa_new[17] }}" ></div>
                 </div>
             </div>
             
@@ -174,7 +192,7 @@
                     <div class="short-div">Berat Badan</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="berat_badan" name="berat_badan" type="text" value="{{ data_siswa_new[16] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="berat_badan" name="berat_badan" type="text" value="{{ data_siswa_new[18] }}" ></div>
                 </div>
             </div>
             
@@ -183,7 +201,7 @@
                     <div class="short-div">Nama ayah</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="nama_ayah" name="nama_ayah" type="text" value="{{ data_siswa_new[17] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="nama_ayah" name="nama_ayah" type="text" value="{{ data_siswa_new[19] }}" ></div>
                 </div>
             </div>
             
@@ -192,25 +210,41 @@
                     <div class="short-div">NIK</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="NIK_ayah" name="NIK_ayah" type="text" value="{{ data_siswa_new[18] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="NIK_ayah" name="NIK_ayah" type="text" value="{{ data_siswa_new[20] }}" ></div>
                 </div>
             </div>
             
             <div class="row">
                 <div class="col-3">
+                    <div class="short-div">Tempat lahir ayah</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tmpt_lhr_ayah" name="tmpt_lhr_ayah" type="text" value="{{ data_siswa_new[21] }}" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="short-div">Tanggal lahir ayah</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tgl_lhr_ayah" name="tgl_lhr_ayah" type="date" value="{{ data_siswa_new[22] }}" ></div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-3">
                     <div class="short-div">Tempat, tanggal lahir</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="TTL_ayah" name="TTL_ayah" type="date" value="{{ data_siswa_new[19] }}"></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="TTL_ayah" name="TTL_ayah" type="date" value="{{ data_siswa_new[23] }}"></div>
                 </div>
-            </div>
+            </div> -->
             
             <div class="row">
                 <div class="col-3">
                     <div class="short-div">Agama</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="agama_ayah" name="agama_ayah" type="text" value="{{ data_siswa_new[20] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="agama_ayah" name="agama_ayah" type="text" value="{{ data_siswa_new[24] }}" ></div>
                 </div>
             </div>
             
@@ -219,7 +253,7 @@
                     <div class="short-div">Alamat ayah</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="alamat_ayah" name="alamat_ayah" type="text" value="{{ data_siswa_new[21] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="alamat_ayah" name="alamat_ayah" type="text" value="{{ data_siswa_new[25] }}" ></div>
                 </div>
             </div>
             
@@ -228,7 +262,7 @@
                     <div class="short-div">Nomor telepon/hp ayah</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="telp_ayah" name="telp_ayah" type="text" value="{{ data_siswa_new[22] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="telp_ayah" name="telp_ayah" type="text" value="{{ data_siswa_new[26] }}" ></div>
                 </div>
             </div>
             
@@ -237,7 +271,7 @@
                     <div class="short-div">Pekerjaan ayah</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="pekerjaan_ayah" name="pekerjaan_ayah" type="text" value="{{ data_siswa_new[23] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="pekerjaan_ayah" name="pekerjaan_ayah" type="text" value="{{ data_siswa_new[27] }}" ></div>
                 </div>
             </div>
             
@@ -246,7 +280,7 @@
                     <div class="short-div">Instansi tempat bekerja</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="instansi_ayah" name="instansi_ayah" type="text" value="{{ data_siswa_new[24] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="instansi_ayah" name="instansi_ayah" type="text" value="{{ data_siswa_new[28] }}" ></div>
                 </div>
             </div>
             
@@ -256,7 +290,7 @@
                 </div>
                 <div class="col-9">
                     <div class="short-div">:&nbsp; 
-                        {% if data_siswa_new[25] == "1 jt" :%}
+                        {% if data_siswa_new[29] == "1 jt" :%}
                             <input class="form-control" type="radio" id="1" name="penghasilan" value="1 jt" checked="checked">
                             <label  for="1" >&#60; 1 jt </label>
                             <input class="form-control" type="radio" id="2" name="penghasilan" value="1 jt - 2,5 jt" >
@@ -265,7 +299,7 @@
                             <label  for="3" >2,5 jt - 5 jt</label>
                             <input class="form-control" type="radio" id="4" name="penghasilan" value="> 5 jt" >
                             <label  for="4" >&#62; 5 jt</label>
-                        {% elif data_siswa_new[25] == "1 jt - 2,5 jt" :%}
+                        {% elif data_siswa_new[29] == "1 jt - 2,5 jt" :%}
                             <input class="form-control" type="radio" id="1" name="penghasilan" value="1 jt" >
                             <label  for="1" >&#60; 1 jt </label>
                             <input class="form-control" type="radio" id="2" name="penghasilan" value="1 jt - 2,5 jt" checked="checked">
@@ -274,7 +308,7 @@
                             <label  for="3" >2,5 jt - 5 jt</label>
                             <input class="form-control" type="radio" id="4" name="penghasilan" value="> 5 jt" >
                             <label  for="4" >&#62; 5 jt</label>
-                        {% elif data_siswa_new[25] == "2,5 jt - 5 jt" :%}
+                        {% elif data_siswa_new[29] == "2,5 jt - 5 jt" :%}
                         <input class="form-control" type="radio" id="1" name="penghasilan" value="1 jt" >
                         <label  for="1" >&#60; 1 jt </label>
                         <input class="form-control" type="radio" id="2" name="penghasilan" value="1 jt - 2,5 jt" >
@@ -283,7 +317,7 @@
                         <label  for="3" >2,5 jt - 5 jt</label>
                         <input class="form-control" type="radio" id="4" name="penghasilan" value="> 5 jt" >
                         <label  for="4" >&#62; 5 jt</label>
-                        {% elif data_siswa_new[25] == "> 5 jt" :%}
+                        {% elif data_siswa_new[29] == "> 5 jt" :%}
                         <input class="form-control" type="radio" id="1" name="penghasilan" value="1 jt" >
                         <label  for="1" >&#60; 1 jt </label>
                         <input class="form-control" type="radio" id="2" name="penghasilan" value="1 jt - 2,5 jt" >
@@ -311,7 +345,7 @@
                     <div class="short-div">Pendidikan terakhir ayah</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="pendidikan_ayah" name="pendidikan_ayah" type="text" value="{{ data_siswa_new[26] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="pendidikan_ayah" name="pendidikan_ayah" type="text" value="{{ data_siswa_new[30] }}" ></div>
                 </div>
             </div>
             
@@ -320,7 +354,7 @@
                     <div class="short-div">Nama ibu</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="nama_ibu" name="nama_ibu" type="text" value="{{ data_siswa_new[27] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="nama_ibu" name="nama_ibu" type="text" value="{{ data_siswa_new[31] }}" ></div>
                 </div>
             </div>
             
@@ -329,25 +363,41 @@
                     <div class="short-div">NIK</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="NIK_ibu" name="NIK_ibu" type="text" value="{{ data_siswa_new[28] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="NIK_ibu" name="NIK_ibu" type="text" value="{{ data_siswa_new[32] }}" ></div>
                 </div>
             </div>
             
             <div class="row">
                 <div class="col-3">
+                    <div class="short-div">Tempat lahir ibu</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tmpt_lhr_ibu" name="tmpt_lhr_ibu" type="text" value="{{ data_siswa_new[33] }}" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="short-div">Tanggal lahir ibu</div>
+                </div>
+                <div class="col-9">
+                    <div class="short-div">:&nbsp; <input class="form-control" id="tgl_lhr_ibu" name="tgl_lhr_ibu" type="date" value="{{ data_siswa_new[34] }}" ></div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-3">
                     <div class="short-div">Tempat, tanggal lahir</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="TTL_ibu" name="TTL_ibu" type="date" value="{{ data_siswa_new[29] }}"></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="TTL_ibu" name="TTL_ibu" type="date" value="{{ data_siswa_new[35] }}"></div>
                 </div>
-            </div>
+            </div> -->
             
             <div class="row">
                 <div class="col-3">
                     <div class="short-div">Agama</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="agama_ibu" name="agama_ibu" type="text" value="{{ data_siswa_new[30] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="agama_ibu" name="agama_ibu" type="text" value="{{ data_siswa_new[36] }}" ></div>
                 </div>
             </div>
             
@@ -356,7 +406,7 @@
                     <div class="short-div">Alamat ibu</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="alamat_ibu" name="alamat_ibu" type="text" value="{{ data_siswa_new[31] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="alamat_ibu" name="alamat_ibu" type="text" value="{{ data_siswa_new[37] }}" ></div>
                 </div>
             </div>
             
@@ -365,7 +415,7 @@
                     <div class="short-div">Nomor telepon/hp ibu</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="telp_ibu" name="telp_ibu" type="text" value="{{ data_siswa_new[32] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="telp_ibu" name="telp_ibu" type="text" value="{{ data_siswa_new[38] }}" ></div>
                 </div>
             </div>
             
@@ -374,7 +424,7 @@
                     <div class="short-div">Pekerjaan ibu</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="pekerjaan_ibu" name="pekerjaan_ibu" type="text" value="{{ data_siswa_new[33] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="pekerjaan_ibu" name="pekerjaan_ibu" type="text" value="{{ data_siswa_new[39] }}" ></div>
                 </div>
             </div>
             
@@ -383,7 +433,7 @@
                     <div class="short-div">Instansi tempat bekerja</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="instansi_ibu" name="instansi_ibu" type="text" value="{{ data_siswa_new[34] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="instansi_ibu" name="instansi_ibu" type="text" value="{{ data_siswa_new[40] }}" ></div>
                 </div>
             </div>
 
@@ -392,7 +442,7 @@
                     <div class="short-div">Pendidikan terakhir ibu</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="pendidikan_ibu" name="pendidikan_ibu" type="text" value="{{ data_siswa_new[35] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="pendidikan_ibu" name="pendidikan_ibu" type="text" value="{{ data_siswa_new[41] }}" ></div>
                 </div>
             </div>
 
@@ -401,7 +451,7 @@
                     <div class="short-div">Jarak dari rumah ke sekolah BI</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="jarak_BI" name="jarak_BI" type="text" value="{{ data_siswa_new[36] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="jarak_BI" name="jarak_BI" type="text" value="{{ data_siswa_new[42] }}" ></div>
                 </div>
             </div>
 
@@ -410,7 +460,7 @@
                     <div class="short-div">Jarak dari rumah ke sekolah TU</div>
                 </div>
                 <div class="col-9">
-                    <div class="short-div">:&nbsp; <input class="form-control" id="jarak_TU" name="jarak_TU" type="text" value="{{ data_siswa_new[37] }}" ></div>
+                    <div class="short-div">:&nbsp; <input class="form-control" id="jarak_TU" name="jarak_TU" type="text" value="{{ data_siswa_new[43] }}" ></div>
                 </div>
             </div>
             
@@ -439,7 +489,8 @@
                 </div> -->
                 <div class="col-6">
                     <div class="short-div">
-                        <a href="{{ url_for('download_file', filename=ijazah_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a> 
+                        <!-- <a href="{{ url_for('download_file', filename=ijazah_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a>  -->
+                        <a href="{{ url_for('download_from_directory', source='tmp', filename=ijazah_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a>
                     </div>
                 </div>
                 {% endif %}
@@ -471,7 +522,8 @@
                 </div> -->
                 <div class="col-6">
                     <div class="short-div">
-                        <a href="{{ url_for('download_file', filename=kk_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a> 
+                        <!-- <a href="{{ url_for('download_file', filename=kk_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a>  -->
+                        <a href="{{ url_for('download_from_directory', source='tmp', filename=kk_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a>
                     </div>
                 </div>
                 {% endif %}
@@ -504,7 +556,8 @@
                 </div> -->
                 <div class="col-6">
                     <div class="short-div">
-                        <a href="{{ url_for('download_file', filename=akta_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a> 
+                        <!-- <a href="{{ url_for('download_file', filename=akta_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a> -->
+                        <a href="{{ url_for('download_from_directory', source='tmp', filename=akta_name) }}"  class="btn btn-primary btn-md" style="width: 150px; height: 35px;" >Unduh</a>
                     </div>
                 </div>
                 {% endif %}

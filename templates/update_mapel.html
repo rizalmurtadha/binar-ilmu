@@ -1,33 +1,36 @@
 {% extends "base.html" %}
-{% block title %}Input Nilai{% endblock %}
+{% block title %}Update Mata Pelajaran{% endblock %}
 {% block content %}
-    <br><br><br><br>
+    <!-- <br><br><br><br> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+
     <div class="container d-flex" style="margin-bottom: 50px;">
         <div class="row d-flex" style="width: 100%; align-items: center; ">
-            <div class="col-3"></div>
-            <div class="col-4">
-                <h4>Unduh template form nilai</h4>
+            <div class="col-2"></div>
+            <div class="col-5">
+                <h4>Unduh template data mata pelajaran</h4>
             </div>
             <div class="col-2">
-                <a href="{{ url_for('download_template_nilai', pelajaran=pelajaran, kelas=kelas)}}"  class="btn btn-primary btn-md" style="width: 150px;" >Unduh template</a>
+                <a href="{{ url_for('download_from_directory', source='tmp', filename='list_mapel.xlsx')}}"  class="btn btn-primary btn-md" style="width: 150px;" >Unduh template</a>
             </div>
         </div>
     </div>
     <div class="container" id="role-select" style="width: 100%;">
-        <form action="{{ url_for('menu_input') }}" id="my-form" method="POST" enctype=multipart/form-data>
-            <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
-            <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
-            <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
-            <input type="hidden" id="aspek_materi "name="aspek_materi" value="{{aspek_materi}}">
+        <form action="{{ url_for('update_mapel') }}" id="my-form" method="POST" enctype=multipart/form-data>
+            <input type="hidden" id="bulk_upload "name="bulk_upload" value="{{bulk_upload}}">
             <div class="row d-flex" style="width: 100%; align-items: center; ">
-                <div class="col-3"></div>
-                <div class="col-4">
-                    <p>Unggah form nilai</p>
+                <div class="col-2"></div>
+                <div class="col-5">
+                    <p>Unggah data mata pelajaran</p>
                 </div>
             </div>
             <div class="row d-flex" style="width: 100%; align-items: center; ">
-                <div class="col-3"></div>
-                <div class="col-4">
+                <div class="col-2"></div>
+                <div class="col-5">
                     <div class="custom-file" >
                         <input type="file" class="custom-file-input" accept=".xlsx" id="customFile" name="file" required>
                         <label class="custom-file-label" for="customFile" >Pilih dokumen..</label>
@@ -37,13 +40,9 @@
                     <button type="submit" class="btn btn-outline-primary btn-md" id="unggah" name="unggah" value="1" style="width: 150px;">Unggah</button>    
                 </div>
             </div>
-            <div class="container" style="min-height: 40px; margin-top: 10px;">
-                {% if(msg): %}
-                    <p class="alert_" style="text-align: center;">{{ msg }}</p>
-                {% endif %}
-            </div>
         </form>
     </div>
+
     <script>
         // Add the following code if you want the name of the file appear on select
         $(".custom-file-input").on("change", function() {

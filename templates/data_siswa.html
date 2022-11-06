@@ -15,7 +15,7 @@
     <div class="container justify-content-center" id="role-select">
             {% for i in range(jlh_kelas): %}
             <div class="container d-flex justify-content-center">
-                <form action="{{ url_for('data_siswa') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data style="width: 30%;">
+                <form action="{{ url_for(target) }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data style="width: 30%;">
                     <div class="row">
                         {% for list_kls in list_kelas %}
                         <input type="hidden" id="list_kelas[]" name="list_kelas[]" value={{list_kls}}>
@@ -27,6 +27,7 @@
             &nbsp;
             {% endfor %}
     </div>
+    {% if target != "update_kelas_kelulusan" : %}
     <div class="container justify-content-end" id="role-select" style="margin-top: 40px;">
         <div class="container d-flex justify-content-end">
             <!-- <form action="{{ url_for('tambah_siswa') }}" id="my-form{{i}}" method="POST" enctype=multipart/form-data >
@@ -39,5 +40,6 @@
         </div>
         &nbsp;
     </div>
+    {% endif %}
     
 {% endblock %}

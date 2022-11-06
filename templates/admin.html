@@ -8,7 +8,7 @@
     </div> -->
 
     <div class="container justify-content-center" id="role-select">
-        <div class="container d-flex justify-content-center">
+        <div class="container d-flex justify-content-center" style="margin-bottom: 50px;">
             <form action="{{ url_for('admin') }}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
                 <div class="row">
                     <!-- <input type="hidden" id="mapel "name="mapel" value=""> -->
@@ -28,6 +28,16 @@
                 <div class="row">
                     <!-- <input type="hidden" id="mapel "name="mapel" value=""> -->
                     <button type="submit" class="btn btn-outline-primary btn-lg" id="pilihan" name="pilihan" value="plot_wali" style="min-width: 400px;">Plotting Wali Kelas</button>
+                </div>
+                &nbsp;
+                <div class="row">
+                    <!-- <input type="hidden" id="mapel "name="mapel" value=""> -->
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="pilihan" name="pilihan" value="update_mapel" style="min-width: 400px;">Update Mata Pelajaran</button>
+                </div>
+                &nbsp;
+                <div class="row">
+                    <!-- <input type="hidden" id="mapel "name="mapel" value=""> -->
+                    <button type="submit" class="btn btn-outline-primary btn-lg" id="pilihan" name="pilihan" value="update_kelas_kelulusan" style="min-width: 400px;">Update Naik Kelas / Kelulusan</button>
                 </div>
             </form>
         </div>

@@ -1,6 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Rekap{% endblock %}
+{% block title %}Update Kelas{% endblock %}
 {% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('update_kelas_kelulusan')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
     <div class="container" style="margin-bottom: 50px;">
         <table class="table" id="table">
             <tbody>
@@ -15,11 +21,11 @@
                                                 <th style="width: 10%; max-height: 10px;">No.</th>
                                                 <th style="width: 20%;">NISN</th>
                                                 <th style="width: 50%; text-align: left;">Nama</th>
-                                                <th style="width: 10%;"> </th>
-                                                <th style="width: 10%;"> </th>
-                                                <!-- <th style="width: 10%;">
-                                                    <input type="checkbox" style="min-width: 17px; min-height: 17px;" onchange="checkAll(this)" name="chk[]" />
-                                                </th> -->
+                                                <!-- <th style="width: 10%;"> </th>
+                                                <th style="width: 10%;"> </th> -->
+                                                <th style="width: 20%;">
+                                                    <input type="checkbox" style="min-width: 25px; min-height: 25px;" onchange="checkAll(this)" name="chk[]" />
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -30,24 +36,24 @@
                                             <tr style="background-color: #DCDCDC">
                                             {% endif %}
                                                 <form action="{{ url_for('wali_rekap')}}" id="foo_form" method="POST" enctype=multipart/form-data style="width: 30%;">
-                                                    <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
-                                                    <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                                                    <!-- <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}"> -->
+                                                    <!-- <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}"> -->
                                                     <input type="hidden" id="kelas "name="kelas" value="{{kelas}}">
-                                                    <input type="hidden" id="aspek_materi "name="aspek_materi" value="{{aspek_materi}}">
-                                                    <input type="hidden" id="cetak_semua "name="cetak_semua" value="0">
+                                                    <!-- <input type="hidden" id="aspek_materi "name="aspek_materi" value="{{aspek_materi}}"> -->
+                                                    <!-- <input type="hidden" id="cetak_semua "name="cetak_semua" value="0"> -->
                                                     <input type="hidden" id="nisn_siswa "name="nisn_siswa" value="{{list_nisn[i]}}">
                                                     <td style="max-height: 5px; padding: 0px; width: 10%;">{{i+1}}.</td>
                                                     <td style="max-height: 5px; padding: 0px; width: 20%;">{{list_nisn[i]}}</td>
                                                     <td style="max-height: 5px; padding: 0px; width: 50%; text-align: left;">{{list_siswa[i]}}</td>
-                                                    <td style="max-height: 5px; padding: 0px; width: 10%;">
+                                                    <!-- <td style="max-height: 5px; padding: 0px; width: 10%;">
                                                         <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="1" style="min-width: 100px;">Lihat</button>
                                                     </td>
                                                     <td style="max-height: 5px; padding: 0px; width: 10%;">
                                                         <button type="submit" class="btn btn-outline-primary btn-sm" id="lihat" name="lihat" value="0" style="min-width: 100px;">Cetak</button>
-                                                    </td>
-                                                    <!-- <td style="max-height: 5px; padding: 0px; width: 10%;">
-                                                        <input type="checkbox"  style="min-width: 100px; width: auto;" class="check-item" name="chk-{{i}}" id="chk-{{i}}"  onchange="stateChkbx('chk-{{i}}')" value="{{list_siswa[i]}}"/>
                                                     </td> -->
+                                                    <td style="max-height: 5px; padding: 0px; width: 20%;">
+                                                        <input type="checkbox"  style="min-width: 100px; width: auto; min-height: 25px;" class="check-item" name="chk-{{i}}" id="chk-{{i}}"  onchange="stateChkbx('chk-{{i}}')" value="{{list_siswa[i]}}"/>
+                                                    </td>
                                                 </form>
                                             </tr>
                                             {% endfor %}
@@ -55,7 +61,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td  colspan="4" class="">
+                                    <!-- <td  colspan="4" class="">
                                         <div class="d-flex justify-content-end">
                                         <form action="{{ url_for('role_wali_menu')}}" id="generate" method="POST" enctype=multipart/form-data>
                                             <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
@@ -75,19 +81,22 @@
                                             <button type="submit" class="btn btn-outline-primary btn-lg" id="cetak_semua" name="cetak_semua" value="1" style="min-width: 100px;">Cetak Semua</button>
                                         </form>
                                         </div>
-                                    </td>
-                                    <!-- <td colspan="1">
+                                    </td> -->
+                                    <td colspan="3">
+                                        
+                                    </td> 
+                                    <td colspan="1">
                                         <div class="">
-                                        <form action="{{ url_for('wali_rekap')}}" id="cetak_semua" method="POST" enctype=multipart/form-data style="width: 30%;">
-                                            <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}">
-                                                    <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}">
+                                        <form action="{{ url_for('update_kelas_kelulusan')}}" id="cetak_semua" method="POST" enctype=multipart/form-data style="width: 30%;">
+                                                    <!-- <input type="hidden" id="eval_type "name="eval_type" value="{{eval_type}}"> -->
+                                                    <!-- <input type="hidden" id="pelajaran "name="pelajaran" value="{{pelajaran}}"> -->
                                                     <input type="hidden" id="kelas"name="kelas" value="{{kelas}}">
                                                     <input type="hidden" id="cetak_semua "name="cetak_semua" value="0">
                                                     <div id="wrapper-chkbx"></div>
                                                     <button type="submit"  class="btn btn-outline-success btn-lg" id="update_kelas" name="update_kelas" value="1" style="min-width: 100px;">Update Kelas</button>
                                         </form>
                                         </div>
-                                    </td> -->
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
