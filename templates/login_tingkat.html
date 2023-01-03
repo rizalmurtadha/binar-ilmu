@@ -1,25 +1,19 @@
 {% extends "base_login.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
-    <br><br>
-    <div class="container d-flex justify-content-end" >
-        <div>
-            <a href="{{ url_for('clearSession')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Pilih jenjang</a>
-        </div>
-    </div>
-    <br><br>
+    <br><br><br><br>
     <div class="container d-flex justify-content-center" id="form-login">
-        <form action="{{ url_for('login') }}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
-            <div class="form-group row">
+        <form action="{{ url_for('tingkat') }}" id="my-form" method="POST" enctype=multipart/form-data style="width: 30%;">
+            <!-- <div class="form-group row">
                 <label for="username" class="col-4 col-form-label">ID Guru</label>
                 <div class="col-8">
-                  <input type="text" class="form-control" id="id_guru" name="id_guru">
+                    <input type="text" class="form-control" id="id_guru" name="id_guru">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="inputPassword" class="col-4 col-form-label">Password</label>
                 <div class="col-8">
-                  <input type="password" class="form-control" id="inputPassword" name="password">
+                    <input type="password" class="form-control" id="inputPassword" name="password">
                 </div>
             </div>
             <div class="container" style="min-height: 40px;">
@@ -28,9 +22,13 @@
                 {% elif(message=="pwdSalah"): %}
                     <p class="alert_" style="text-align: center;">Password salah</p>
                 {% endif %}
-            </div>
+            </div> -->
             <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-outline-primary btn-lg" id="Login" name="Login" value="1">Login</button>
+                <button type="submit" class="btn btn-outline-primary btn-lg" id="tingkat" name="tingkat" value="SMP">SMP</button>
+            </div>
+            &nbsp;
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-outline-primary btn-lg" id="tingkat" name="tingkat" value="SMA">SMA</button>
             </div>
         </form>
     </div>

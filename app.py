@@ -29,16 +29,34 @@ def stream_dropbox_file(path):
         return BytesIO(byte_data)
 
 def loadDataInPd(path, source=None):
+    if session["tingkat"] == "SMA" :
+        path = "/SMA{}".format(path)
+    
     if source == None:
         file_stream=stream_dropbox_file(path)
         return pd.read_excel(file_stream)
     else :
+        if session["tingkat"] == "SMA" :
+            source = "/SMA{}".format(source)
+
         try:
             dbx.files_get_metadata(path)
         except:
             dbx.files_copy(source, path)
         file_stream=stream_dropbox_file(path)
         return pd.read_excel(file_stream)
+
+def saveDataToDB(pathFromHeroku, targetInDB):
+    if session["tingkat"] == "SMA" :
+        targetInDB = "/SMA{}".format(targetInDB) 
+    with open(pathFromHeroku, 'rb') as f:
+        dbx.files_upload(f.read(), targetInDB, mode=dropbox.files.WriteMode.overwrite)
+
+def check_jenjang():
+    if session['tingkat'] == "SMA":
+        return "/SMA"
+    else:
+        return ""
 
 def check_period():
     # define the period
@@ -62,15 +80,16 @@ tahun_ajaran, semester, folder_name_1 = check_period()
 def check_folder(eval_type):
     tahun_ajaran, semester, folder_name_1 = check_period()
     # create folder of year_semester if not exist
+    jenjang = check_jenjang()
     try:
-        dbx.files_get_metadata("/nilai/{}".format(folder_name_1))
+        dbx.files_get_metadata("{}/nilai/{}".format(jenjang, folder_name_1))
     except:
-        dbx.files_create_folder("/nilai/{}".format(folder_name_1))
+        dbx.files_create_folder("{}/nilai/{}".format(jenjang, folder_name_1))
     # create folder PTS/PAS if not exist
     try:
-        dbx.files_get_metadata("/nilai/{}/{}".format(folder_name_1, eval_type))
+        dbx.files_get_metadata("{}/nilai/{}/{}".format(jenjang, folder_name_1, eval_type))
     except:
-        dbx.files_create_folder("/nilai/{}/{}".format(folder_name_1, eval_type))
+        dbx.files_create_folder("{}/nilai/{}/{}".format(jenjang, folder_name_1, eval_type))
 
 def check_predikat(avg, sikap=False):
     if sikap==False:
@@ -96,16 +115,35 @@ def check_predikat(avg, sikap=False):
     return predikat
 
 def update_kelas(nm, kls, list_nm):
-    if nm in list_nm:
-        if kls == "VII":
-            new_kls = "VIII"
-        elif kls == "VIII":
-            new_kls = "IX"
+    if session['tingkat'] == "SMP":
+        if nm in list_nm:
+            if kls == "VII":
+                new_kls = "VIII"
+            elif kls == "VIII":
+                new_kls = "IX"
+            else:
+                new_kls = "Alumni"
         else:
-            new_kls = "Alumni"
-    else:
-        new_kls = kls
+            new_kls = kls
+    elif session['tingkat'] == "SMA":
+        if nm in list_nm:
+            if kls == "X":
+                new_kls = "XI"
+            elif kls == "XI":
+                new_kls = "XII"
+            else:
+                new_kls = "Alumni"
+        else:
+            new_kls = kls
     return new_kls
+
+@app.route("/tingkat",methods=["GET", "POST"])
+def tingkat():
+    try:
+        tingkat = request.form['tingkat']
+        session["tingkat"] = tingkat
+    finally:
+        return redirect(url_for("login"))
 
 @app.route("/",methods=["GET", "POST"])
 def login():
@@ -150,6 +188,8 @@ def login():
                     else:
                         # Password salah
                         return render_template("login.html",message="pwdSalah")
+        if "tingkat" not in session:
+            return render_template("login_tingkat.html")
         return render_template("login.html")
 
 @app.route("/role",methods=["GET", "POST"])
@@ -288,34 +328,34 @@ def edit_siswa():
             kk_name = ""
             akta_name = ""
             if(save_edit =="0" and dropout =="0"):
-                pas_foto_list = dbx.files_list_folder(path="/dokumen/pas_foto")
+                pas_foto_list = dbx.files_list_folder(path="{}/dokumen/pas_foto".format(check_jenjang()))
                 for i in range(len(pas_foto_list.entries)):
                     file_name = pas_foto_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
                         pas_foto_name = "pas_foto_{}".format(file_name)
-                        dbx.files_download_to_file("./tmp/{}".format(pas_foto_name), "/dokumen/pas_foto/{}".format(file_name))
+                        dbx.files_download_to_file("./tmp/{}".format(pas_foto_name), "{}/dokumen/pas_foto/{}".format(check_jenjang(), file_name))
 
-                ijazah_list = dbx.files_list_folder(path="/dokumen/ijazah_sd")
+                ijazah_list = dbx.files_list_folder(path="{}/dokumen/ijazah_sd".format(check_jenjang()))
                 for i in range(len(ijazah_list.entries)):
                     file_name = ijazah_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
                         ijazah_name = "ijazah_{}".format(file_name)
-                        dbx.files_download_to_file("./tmp/{}".format(ijazah_name), "/dokumen/ijazah_sd/{}".format(file_name))
+                        dbx.files_download_to_file("./tmp/{}".format(ijazah_name), "{}/dokumen/ijazah_sd/{}".format(check_jenjang(), file_name))
 
 
-                kk_list = dbx.files_list_folder(path="/dokumen/kartu_keluarga")
+                kk_list = dbx.files_list_folder(path="{}/dokumen/kartu_keluarga".format(check_jenjang()))
                 for i in range(len(kk_list.entries)):
                     file_name = kk_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
                         kk_name = "kartu_keluarga{}".format(file_name)
-                        dbx.files_download_to_file("./tmp/{}".format(kk_name), "/dokumen/kartu_keluarga/{}".format(file_name))
+                        dbx.files_download_to_file("./tmp/{}".format(kk_name), "{}/dokumen/kartu_keluarga/{}".format(check_jenjang(), file_name))
 
-                akta_list = dbx.files_list_folder(path="/dokumen/akta_kelahiran")
+                akta_list = dbx.files_list_folder(path="{}/dokumen/akta_kelahiran".format(check_jenjang()))
                 for i in range(len(akta_list.entries)):
                     file_name = akta_list.entries[i].name
                     if ( str(nisn_edit) == file_name.split(".")[0]):
                         akta_name = "akta_kelahiran_{}".format(file_name)
-                        dbx.files_download_to_file("./tmp/{}".format(akta_name), "/dokumen/akta_kelahiran/{}".format(file_name))
+                        dbx.files_download_to_file("./tmp/{}".format(akta_name), "{}/dokumen/akta_kelahiran/{}".format(check_jenjang(), file_name))
 
             data_siswa.set_index("NISN", inplace=True)
 
@@ -389,8 +429,9 @@ def edit_siswa():
                 data_siswa.insert(0, 'Nama', first_column)
 
                 data_siswa.to_excel("./tmp/data_siswa_edit.xlsx", index=None)
-                with open("./tmp/data_siswa_edit.xlsx", 'rb') as f:
-                    dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./tmp/data_siswa_edit.xlsx", "/data_siswa.xlsx")
+                ## with open("./tmp/data_siswa_edit.xlsx", 'rb') as f:
+                ##     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
 
                 # image file
                 pas_foto = request.files["pas_foto"]
@@ -405,8 +446,9 @@ def edit_siswa():
 
                     file_destination = "/".join([PATH_TMP, pas_foto_name])
                     pas_foto.save(file_destination)
-                    with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
-                        dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(nisn_edit,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./tmp/{}".format(pas_foto_name), "/dokumen/pas_foto/{}.{}".format(nisn_edit,pas_foto_ext))
+                    ## with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
+                    ##     dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(nisn_edit,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
 
                 if ijazah.filename != '':
                     ijazah_ext = ijazah.filename.split(".")[1]
@@ -414,8 +456,9 @@ def edit_siswa():
 
                     file_destination = "/".join([PATH_TMP, ijazah_name])
                     ijazah.save(file_destination)
-                    with open("./tmp/{}".format(ijazah_name), 'rb') as f:
-                        dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(nisn_edit,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./tmp/{}".format(ijazah_name), "/dokumen/ijazah_sd/{}.{}".format(nisn_edit,ijazah_ext))
+                    ## with open("./tmp/{}".format(ijazah_name), 'rb') as f:
+                    ##     dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(nisn_edit,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
 
                 if kk.filename != '':
                     kk_ext = kk.filename.split(".")[1]
@@ -423,8 +466,9 @@ def edit_siswa():
 
                     file_destination = "/".join([PATH_TMP, kk_name])
                     kk.save(file_destination)
-                    with open("./tmp/{}".format(kk_name), 'rb') as f:
-                        dbx.files_upload(f.read(), "/dokumen/kartu_keluarga/{}.{}".format(nisn_edit,kk_ext), mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./tmp/{}".format(kk_name), "/dokumen/kartu_keluarga/{}.{}".format(nisn_edit,kk_ext))
+                    ## with open("./tmp/{}".format(kk_name), 'rb') as f:
+                    ##     dbx.files_upload(f.read(), "/dokumen/kartu_keluarga/{}.{}".format(nisn_edit,kk_ext), mode=dropbox.files.WriteMode.overwrite)
 
                 if akta_kelahiran.filename != '':
                     akta_kelahiran_ext = akta_kelahiran.filename.split(".")[1]
@@ -432,8 +476,9 @@ def edit_siswa():
 
                     file_destination = "/".join([PATH_TMP, akta_kelahiran_name])
                     akta_kelahiran.save(file_destination)
-                    with open("./tmp/{}".format(akta_kelahiran_name), 'rb') as f:
-                        dbx.files_upload(f.read(), "/dokumen/akta_kelahiran/{}.{}".format(nisn_edit,akta_kelahiran_ext), mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./tmp/{}".format(akta_kelahiran_name), "/dokumen/akta_kelahiran/{}.{}".format(nisn_edit,akta_kelahiran_ext))
+                    ## with open("./tmp/{}".format(akta_kelahiran_name), 'rb') as f:
+                    ##    dbx.files_upload(f.read(), "/dokumen/akta_kelahiran/{}.{}".format(nisn_edit,akta_kelahiran_ext), mode=dropbox.files.WriteMode.overwrite)
 
                 return redirect(url_for("data_siswa"))
             elif dropout =="1":
@@ -443,8 +488,9 @@ def edit_siswa():
                 data_siswa.reset_index(inplace=True)
 
                 data_siswa.to_excel("./data/data_siswa.xlsx", index=None)
-                with open("./data/data_siswa.xlsx", 'rb') as f:
-                    dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./data/data_siswa.xlsx", "/data_siswa.xlsx")
+                ## with open("./data/data_siswa.xlsx", 'rb') as f:
+                ##     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("data_siswa"))
         return render_template("edit_siswa_new.html",kelas=kelas,list_kelas=list_kelas, nisn_edit=nisn_edit,
                                         nama_edit=nama_edit, kelas_edit=kelas_edit, data_siswa_new=data_siswa_new,
@@ -482,8 +528,9 @@ def tambah_siswa():
                         data_siswa = pd.concat([data_siswa, new_data], axis=0)
 
                         data_siswa.to_excel("./tmp/data_siswa_bulk.xlsx", index=None)
-                        with open("./tmp/data_siswa_bulk.xlsx", 'rb') as f:
-                            dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                        saveDataToDB("./tmp/data_siswa_bulk.xlsx", "/data_siswa.xlsx")
+                        ## with open("./tmp/data_siswa_bulk.xlsx", 'rb') as f:
+                        ##     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
                         # return "berhasil upload bulk"
                         return redirect(url_for("data_siswa"))
 
@@ -491,6 +538,9 @@ def tambah_siswa():
                     nama = request.form["nama"]
                     nama_panggilan = request.form["nama_panggilan"]
                     NISN = request.form["NISN"]
+
+                    
+
                     kelas = request.form["kelas"]
                     NIK = str(request.form["NIK"])
 
@@ -568,9 +618,10 @@ def tambah_siswa():
                     data_siswa.to_excel("./tmp/data_siswa_append.xlsx", index=None)
 
                     # -- Untuk Upload Ke Dropbox --
-                    with open("./tmp/data_siswa_append.xlsx", 'rb') as f:
-                    # with open("./dev/data_siswa.xlsx", 'rb') as f:    # untuk reset data
-                        dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./tmp/data_siswa_append.xlsx", "/data_siswa.xlsx")
+                    ## with open("./tmp/data_siswa_append.xlsx", 'rb') as f:
+                    #### with open("./dev/data_siswa.xlsx", 'rb') as f:    # untuk reset data
+                    ##     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
 
                     # image file
                     pas_foto = request.files["pas_foto"]
@@ -585,8 +636,9 @@ def tambah_siswa():
 
                         file_destination = "/".join([PATH_TMP, pas_foto_name])
                         pas_foto.save(file_destination)
-                        with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
-                            dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(NISN,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
+                        saveDataToDB("./tmp/{}".format(pas_foto_name), "/dokumen/pas_foto/{}.{}".format(NISN,pas_foto_ext))
+                        ## with open("./tmp/{}".format(pas_foto_name), 'rb') as f:
+                        ##     dbx.files_upload(f.read(), "/dokumen/pas_foto/{}.{}".format(NISN,pas_foto_ext), mode=dropbox.files.WriteMode.overwrite)
 
                     if ijazah.filename != '':
                         ijazah_ext = ijazah.filename.split(".")[1]
@@ -594,8 +646,9 @@ def tambah_siswa():
 
                         file_destination = "/".join([PATH_TMP, ijazah_name])
                         ijazah.save(file_destination)
-                        with open("./tmp/{}".format(ijazah_name), 'rb') as f:
-                            dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(NISN,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
+                        saveDataToDB("./tmp/{}".format(ijazah_name), "/dokumen/ijazah_sd/{}.{}".format(NISN,ijazah_ext))
+                        ## with open("./tmp/{}".format(ijazah_name), 'rb') as f:
+                        ##     dbx.files_upload(f.read(), "/dokumen/ijazah_sd/{}.{}".format(NISN,ijazah_ext), mode=dropbox.files.WriteMode.overwrite)
 
                     if kk.filename != '':
                         kk_ext = kk.filename.split(".")[1]
@@ -603,8 +656,9 @@ def tambah_siswa():
 
                         file_destination = "/".join([PATH_TMP, kk_name])
                         kk.save(file_destination)
-                        with open("./tmp/{}".format(kk_name), 'rb') as f:
-                            dbx.files_upload(f.read(), "/dokumen/kartu_keluarga/{}.{}".format(NISN,kk_ext), mode=dropbox.files.WriteMode.overwrite)
+                        saveDataToDB("./tmp/{}".format(kk_name), "/dokumen/kartu_keluarga/{}.{}".format(NISN,kk_ext))
+                        ## with open("./tmp/{}".format(kk_name), 'rb') as f:
+                        ##     dbx.files_upload(f.read(), "/dokumen/kartu_keluarga/{}.{}".format(NISN,kk_ext), mode=dropbox.files.WriteMode.overwrite)
 
                     if akta_kelahiran.filename != '':
                         akta_kelahiran_ext = akta_kelahiran.filename.split(".")[1]
@@ -612,8 +666,9 @@ def tambah_siswa():
 
                         file_destination = "/".join([PATH_TMP, akta_kelahiran_name])
                         akta_kelahiran.save(file_destination)
-                        with open("./tmp/{}".format(akta_kelahiran_name), 'rb') as f:
-                            dbx.files_upload(f.read(), "/dokumen/akta_kelahiran/{}.{}".format(NISN,akta_kelahiran_ext), mode=dropbox.files.WriteMode.overwrite)
+                        saveDataToDB("./tmp/{}".format(akta_kelahiran_name), "/dokumen/akta_kelahiran/{}.{}".format(NISN,akta_kelahiran_ext))
+                        ## with open("./tmp/{}".format(akta_kelahiran_name), 'rb') as f:
+                        ##     dbx.files_upload(f.read(), "/dokumen/akta_kelahiran/{}.{}".format(NISN,akta_kelahiran_ext), mode=dropbox.files.WriteMode.overwrite)
                     # return "berhasil upload"
                     return redirect(url_for("data_siswa"))
             except:
@@ -675,8 +730,9 @@ def edit_guru():
                 data_guru.reset_index(inplace=True)
 
                 data_guru.to_excel("./data/data_guru.xlsx", index=None)
-                with open("./data/data_guru.xlsx", 'rb') as f:
-                    dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./data/data_guru.xlsx", "/data_guru.xlsx")
+                ## with open("./data/data_guru.xlsx", 'rb') as f:
+                ##     dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("data_guru"))
             return render_template("edit_guru.html", id_sel=id_sel, nama_sel=nama_sel, pass_sel=pass_sel)
     else:
@@ -699,8 +755,9 @@ def tambah_guru():
             if tambah == "1":
                 data_guru = data_guru.append({'ID Guru': id_now, 'Nama': name, 'Password': 'smpbinarilmu'}, ignore_index=True)
                 data_guru.to_excel("./data/data_guru.xlsx", index=None)
-                with open("./data/data_guru.xlsx", 'rb') as f:
-                    dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./data/data_guru.xlsx", "/data_guru.xlsx")
+                ## with open("./data/data_guru.xlsx", 'rb') as f:
+                ##    dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("data_guru"))
             return render_template("tambah_guru.html",id_now=id_now)
     else:
@@ -730,15 +787,16 @@ def plot_pengajaran():
             newData.to_excel("./data/guru_mapel.xlsx", index=None)
             # update guru_mapel.xlsx according to the input
             # guru_mapel.to_excel("./data/guru_mapel.xlsx", index=None)
-            with open("./data/guru_mapel.xlsx", 'rb') as f:
-                dbx.files_upload(f.read(), "/guru_mapel.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            saveDataToDB("./data/guru_mapel.xlsx", "/guru_mapel.xlsx")
+            ## with open("./data/guru_mapel.xlsx", 'rb') as f:
+            ##     dbx.files_upload(f.read(), "/guru_mapel.xlsx", mode=dropbox.files.WriteMode.overwrite)
             return redirect(url_for("plot_pengajaran"))
         # get list guru
         # load data guru
         data_guru = loadDataInPd("/data_guru.xlsx")
         list_guru = data_guru["Nama"].tolist()
         return render_template("plot_pengajaran.html",list_mapel=list_mapel,jlh_list=len(list_mapel),list_guru=list_guru,
-                                   list_kelasVII=list_kelasVII, list_kelasVIII=list_kelasVIII,list_kelasIX=list_kelasIX,jlh_guru=len(list_guru))
+                                    list_kelasVII=list_kelasVII, list_kelasVIII=list_kelasVIII,list_kelasIX=list_kelasIX,jlh_guru=len(list_guru))
     else:
         return redirect(url_for("login"))
 
@@ -764,8 +822,9 @@ def plot_wali():
             newData.to_excel("./data/guru_wali_kelas_baru.xlsx", index=None)
             # update guru_mapel.xlsx according to the input
             ### guru_mapel.to_excel("./data/guru_mapel.xlsx", index=None)
-            with open("./data/guru_wali_kelas_baru.xlsx", 'rb') as f:
-                dbx.files_upload(f.read(), "/guru_wali_kelas.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            saveDataToDB("./data/guru_wali_kelas_baru.xlsx", "/guru_wali_kelas.xlsx")
+            ## with open("./data/guru_wali_kelas_baru.xlsx", 'rb') as f:
+            ##     dbx.files_upload(f.read(), "/guru_wali_kelas.xlsx", mode=dropbox.files.WriteMode.overwrite)
             return redirect(url_for("plot_wali"))
         return render_template("plot_wali.html",jlh_list=len(list_kelas),list_guru=list_guru, jlh_guru=len(list_guru),list_kelas=list_kelas,list_wali=list_wali)
     else:
@@ -794,8 +853,9 @@ def update_kelas_kelulusan():
                     data_siswa.loc[i,"Kelas"] = new_kls
                 data_siswa.to_excel("./data/data_siswa_updated.xlsx", index=None)
                 # save updated data_siswa.xlsx to DB
-                # with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
-                #     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./data/data_siswa_updated.xlsx", "/data_siswa.xlsx")
+                ## with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
+                ##     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 
                 # cek if there is "Alumni" in data_siswa
                 # data_siswa = pd.read_excel("tmp/data_siswa_append.xlsx")        # Testing
@@ -809,11 +869,13 @@ def update_kelas_kelulusan():
                     alumni.to_excel("data/data_alumni_updated.xlsx", index=None)
 
                     # Save updated data_siswa & data_alumni to DB 
-                    # with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
-                    #     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./data/data_siswa_updated.xlsx", "/data_siswa.xlsx")
+                    ## with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
+                    ##     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
 
-                    # with open("./data/data_alumni_updated.xlsx", 'rb') as f:    # untuk reset data
-                    #     dbx.files_upload(f.read(), "/data_alumni.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./data/data_alumni_updated.xlsx", "/data_alumni.xlsx")
+                    ## with open("./data/data_alumni_updated.xlsx", 'rb') as f:    # untuk reset data
+                    ##     dbx.files_upload(f.read(), "/data_alumni.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("update_kelas_kelulusan"))
             else:
                 # 10 Halaman Kelas
@@ -850,8 +912,9 @@ def update_mapel():
                 file_destination = "/".join([PATH_TMP,"list_mapel.xlsx"])
                 file.save(file_destination)
                 # Save list mapel new to DB
-                # with open("./tmp/list_mapel.xlsx", 'rb') as f:
-                #    dbx.files_upload(f.read(), "/list_mapel.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./tmp/list_mapel.xlsx", "/list_mapel.xlsx")
+                ## with open("./tmp/list_mapel.xlsx", 'rb') as f:
+                ##    dbx.files_upload(f.read(), "/list_mapel.xlsx", mode=dropbox.files.WriteMode.overwrite)
 
                 # Change file guru_mapel.xlsx
                 # load file “list_mapel.xlsx”
@@ -865,8 +928,9 @@ def update_mapel():
 
                 # save as new “guru_mapel.xlsx”
                 list_mapel.to_excel("./data/guru_mapel.xlsx", index=None)
-                # with open("./data/guru_mapel.xlsx", 'rb') as f:
-                #     dbx.files_upload(f.read(), "/guru_mapel.xlsx", mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./data/guru_mapel.xlsx", "/guru_mapel.xlsx")
+                ## with open("./data/guru_mapel.xlsx", 'rb') as f:
+                ##     dbx.files_upload(f.read(), "/guru_mapel.xlsx", mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("plot_pengajaran"))
         return render_template("update_mapel.html")
     else:
@@ -902,15 +966,17 @@ def role_mapel_menu():
                 if status == 0:
                     try:
                         # delete form nilai & komentar
-                        dbx.files_delete("/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
-                        dbx.files_delete("/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+                        jenjang = check_jenjang()
+                        dbx.files_delete("{}/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(jenjang, folder_name_1, eval_type, pelajaran, kelas))
+                        dbx.files_delete("{}/nilai/{}/{}/Komentar_{}_{}.xlsx".format(jenjang, folder_name_1, eval_type, pelajaran, kelas))
                         # load status file
                         status_nilai = loadDataInPd("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
                         status_nilai.set_index("Mata Pelajaran", inplace=True)
                         status_nilai.loc[pelajaran, kelas] = 0
                         status_nilai.to_excel("./tmp/status_nilai.xlsx")
-                        with open("./tmp/status_nilai.xlsx", 'rb') as f:
-                            dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
+                        saveDataToDB("./tmp/status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+                        ## with open("./tmp/status_nilai.xlsx", 'rb') as f:
+                        ##     dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
                     except:
                         print("gagal hapus data mapel")
             except:
@@ -921,14 +987,15 @@ def role_mapel_menu():
 
             # copy template status nilai if not exist
             try:
-                dbx.files_get_metadata("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+                dbx.files_get_metadata("{}/nilai/{}/{}/status_nilai.xlsx".format(check_jenjang(), folder_name_1, eval_type))
             except:
                 status_nilai = loadDataInPd("/nilai/{}/guru_mapel.xlsx".format(folder_name_1), "/guru_mapel.xlsx")
                 status_nilai.iloc[:,1:] = 0
 
                 status_nilai.to_excel("./data/status_nilai.xlsx", index=None)
-                with open("./data/status_nilai.xlsx", 'rb') as f:    
-                    dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./data/status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+                ## with open("./data/status_nilai.xlsx", 'rb') as f:    
+                ##     dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
 
             # load status nilai
             status_nilai = loadDataInPd("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
@@ -1033,8 +1100,9 @@ def mapel_rekap():
             # save komentar dataframe
             form_komentar.reset_index(inplace=True)
             form_komentar.to_excel("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), index=None)
-            with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
-                dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
+            saveDataToDB("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+            ## with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
+            ##     dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
 
         if nisn_siswa != None and save_komentar !="1":
             # present nilai siswa : rekap_mapel View -> Tombol lihat/cetak
@@ -1152,7 +1220,7 @@ def role_wali_menu():
             # check the existence of rekap file
             if generate == None:
                 try:
-                    dbx.files_get_metadata("/nilai/{}/{}/Rekap_Nilai_{}".format(folder_name_1, eval_type, kelas))
+                    dbx.files_get_metadata("{}/nilai/{}/{}/Rekap_Nilai_{}".format(check_jenjang(), folder_name_1, eval_type, kelas))
                     generate = False
                 except:
                     generate = True
@@ -1164,8 +1232,8 @@ def role_wali_menu():
                 # create list mapel and kelas
                 mapel = guru_mapel.index.tolist()
                 # create list of exist file in folder nilai/tahun_sem/PTS or PAS
-                # a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type, kelas))
-                a = dbx.files_list_folder(path="/nilai/{}/{}".format(folder_name_1, eval_type))
+                # a = dbx.files_list_folder(path="{}/nilai/{}/{}".format(check_jenjang(), folder_name_1, eval_type, kelas))
+                a = dbx.files_list_folder(path="{}/nilai/{}/{}".format(check_jenjang(), folder_name_1, eval_type))
                 file_list = []
                 for i in range(len(a.entries)):
                     file_name = a.entries[i].name
@@ -1216,21 +1284,24 @@ def role_wali_menu():
             #     form_nilai["Rata_rata"] = form_nilai.iloc[:,1:].mean(axis=1).values
             #     form_nilai["Predikat"] = form_nilai["Rata_rata"].apply(lambda x: check_predikat(x))
                 form_nilai.to_excel("./nilai/Rekap_Nilai_{}.xlsx".format(kelas), index=None)
-                with open("./nilai/Rekap_Nilai_{}.xlsx".format(kelas), 'rb') as f:
-                    dbx.files_upload(f.read(), "/nilai/{}/{}/Rekap_Nilai_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
+                saveDataToDB("./nilai/Rekap_Nilai_{}.xlsx".format(kelas), "/nilai/{}/{}/Rekap_Nilai_{}.xlsx".format(folder_name_1, eval_type, kelas))
+                ## with open("./nilai/Rekap_Nilai_{}.xlsx".format(kelas), 'rb') as f:
+                ##     dbx.files_upload(f.read(), "/nilai/{}/{}/Rekap_Nilai_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
+                
                 # create file komentar
                 # create komentar dataframe
                 komentar = 0
                 try:
-                    dbx.files_get_metadata("/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas))
+                    dbx.files_get_metadata("{}/nilai/{}/{}/Komentar_{}.xlsx".format(check_jenjang(), folder_name_1, eval_type, kelas))
                 except:
                     komentar = 1
                 if komentar:
                     form_komentar = data_siswa[data_siswa["Kelas"] == kelas][["NISN", "Nama"]]
                     form_komentar["Komentar"] = ""
                     form_komentar.to_excel("./nilai/Komentar_{}.xlsx".format(kelas), index=None)
-                    with open("./nilai/Komentar_{}.xlsx".format(kelas), 'rb') as f:
-                        dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
+                    saveDataToDB("./nilai/Komentar_{}.xlsx".format(kelas), "/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas))
+                    ## with open("./nilai/Komentar_{}.xlsx".format(kelas), 'rb') as f:
+                    ##     dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
                 return redirect(url_for("wali_rekap",eval_type=eval_type, pelajaran=pelajaran, kelas=kelas))
         else:
             return redirect(url_for("role"))
@@ -1303,8 +1374,9 @@ def wali_rekap():
                 new_kls = update_kelas(nm, kls, checked_siswa)
                 data_siswa.loc[i,"Kelas"] = new_kls
             data_siswa.to_excel("./data/data_siswa_updated.xlsx", index=None)
-            with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
-                dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            saveDataToDB("./data/data_siswa_updated.xlsx", "/data_siswa.xlsx")
+            ## with open("./data/data_siswa_updated.xlsx", 'rb') as f:    # untuk reset data
+            ##     dbx.files_upload(f.read(), "/data_siswa.xlsx", mode=dropbox.files.WriteMode.overwrite)
             return redirect(url_for("role"))
 
         if save_komentar=="1":
@@ -1314,8 +1386,9 @@ def wali_rekap():
             # save komentar dataframe
             form_komentar.reset_index(inplace=True)
             form_komentar.to_excel("./nilai/Komentar_{}.xlsx".format(kelas), index=None)
-            with open("./nilai/Komentar_{}.xlsx".format(kelas), 'rb') as f:
-                dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
+            saveDataToDB("./nilai/Komentar_{}.xlsx".format(kelas), "/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas))
+            ## with open("./nilai/Komentar_{}.xlsx".format(kelas), 'rb') as f:
+            ##     dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}.xlsx".format(folder_name_1, eval_type, kelas), mode=dropbox.files.WriteMode.overwrite)
 
 
         if nisn_siswa != None and save_komentar!="1":
@@ -1462,8 +1535,9 @@ def ganti_password():
                 data_guru.loc[id_guru, "Password"] = passwd_baru
             data_guru.reset_index(inplace=True)
             data_guru.to_excel("./data/data_guru.xlsx", index=None)
-            with open("./data/data_guru.xlsx", 'rb') as f:
-                dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
+            saveDataToDB("./data/data_guru.xlsx", "/data_guru.xlsx")
+            ## with open("./data/data_guru.xlsx", 'rb') as f:
+            ##     dbx.files_upload(f.read(), "/data_guru.xlsx", mode=dropbox.files.WriteMode.overwrite)
             return redirect(url_for("role"))
         return render_template("ganti_pass.html", id=session["user"],nama=session["nama_user"])
     else:
@@ -1485,6 +1559,7 @@ def download_from_directory(source, filename):
 
 @app.route("/clear")
 def clearSession():
+    session.pop('tingkat',None)
     session.pop('user',None)
     session.pop('nama_user',None)
     return redirect(url_for('login'))
@@ -1549,8 +1624,9 @@ def unggah_form_nilai(file, eval_type, pelajaran, kelas, aspek_materi):
     form_komentar = form_nilai.iloc[:,[0,1,-1]]
     tahun_ajaran, semester, folder_name_1 = check_period()
     form_komentar.to_excel("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), index=None)
-    with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
-        dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
+    saveDataToDB("./nilai/Komentar_{}_{}.xlsx", "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+    ## with open("./nilai/Komentar_{}_{}.xlsx".format(pelajaran, kelas), 'rb') as f:
+    ##     dbx.files_upload(f.read(), "/nilai/{}/{}/Komentar_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
     
     form_nilai = form_nilai.iloc[:,:-1]
     col_title = form_nilai.columns.tolist()
@@ -1620,16 +1696,19 @@ def unggah_form_nilai(file, eval_type, pelajaran, kelas, aspek_materi):
     form_nilai.to_excel(file_destination, index=None)
 
     tahun_ajaran, semester, folder_name_1 = check_period()
-    with open(file_destination, 'rb') as f:
-        dbx.files_upload(f.read(), "/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
+    saveDataToDB(file_destination, "/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas))
+    ## with open(file_destination, 'rb') as f:
+    ##     dbx.files_upload(f.read(), "/nilai/{}/{}/form_nilai_{}_{}.xlsx".format(folder_name_1, eval_type, pelajaran, kelas), mode=dropbox.files.WriteMode.overwrite)
+    
     # update input status
     # load status file
     status_nilai = loadDataInPd("/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
     status_nilai.set_index("Mata Pelajaran", inplace=True)
     status_nilai.loc[pelajaran, kelas] = 1
     status_nilai.to_excel("./tmp/status_nilai.xlsx")
-    with open("./tmp/status_nilai.xlsx", 'rb') as f:
-        dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
+    saveDataToDB("./tmp/status_nilai.xlsx", "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type))
+    ## with open("./tmp/status_nilai.xlsx", 'rb') as f:
+    ##     dbx.files_upload(f.read(), "/nilai/{}/{}/status_nilai.xlsx".format(folder_name_1, eval_type), mode=dropbox.files.WriteMode.overwrite)
     return flag, None
 
 def deskripsi(x, type="spiritual"):
@@ -1686,26 +1765,33 @@ def createResponse(pdf,filename_pdf):
 def getDataDev(filename):
     # file_stream=stream_dropbox_file("/data_guru.xlsx")
     # data = pd.read_excel(file_stream)
-    dbx.files_download_to_file("./dev/{}".format(filename), "/{}".format(filename))
+    dbx.files_download_to_file("./dev/{}".format(filename), "{}/{}".format(check_jenjang(), filename))
     # data = pd.read_excel("./tmp/data_guru.xlsx")
     return filename
 
-@app.route('/del_foto/<string:filename>')
-def delFoto(filename):
+@app.route('/del_foto/<string:filename>/<string:tingkat>')
+def delFoto(filename, tingkat):
+    if tingkat == "SMA":
+        jenjang = "/SMA"
+    elif tingkat == "SMP":
+        jenjang = ""
+    else:
+        return filename
+
     try:
-        dbx.files_delete("/dokumen/pas_foto/{}".format(filename))
+        dbx.files_delete("{}/dokumen/pas_foto/{}".format(jenjang, filename))
     except:
         pass
     try:
-        dbx.files_delete("/dokumen/ijazah_sd/{}".format(filename))
+        dbx.files_delete("{}/dokumen/ijazah_sd/{}".format(jenjang, filename))
     except:
         pass
     try:
-        dbx.files_delete("/dokumen/kartu_keluarga/{}".format(filename))
+        dbx.files_delete("{}/dokumen/kartu_keluarga/{}".format(jenjang, filename))
     except:
         pass
     try:
-        dbx.files_delete("/dokumen/akta_kelahiran/{}".format(filename))
+        dbx.files_delete("{}/dokumen/akta_kelahiran/{}".format(jenjang, filename))
     except:
         pass
     return filename
