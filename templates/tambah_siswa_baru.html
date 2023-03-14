@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('data_siswa_new')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Tambah Siswa Baru Awal Tahun</h4>
+    </div>
+<form action="{{ url_for('tambah_siswa_baru') }}" method="POST" enctype=multipart/form-data>
+<div class="container">
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <div class="col-4">
+            <a href="{{ url_for('download_files',filename='template.xlsx') }}">
+                Unduh template</a>
+        </div>
+    </div>
+        <!--  -->
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <p>Unggah daftar siswa baru</p>
+            </div>
+        </div>
+        <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px">
+        <div class="col-4">
+            <div class="custom-file" >
+                <input type="file" class="custom-file-input" accept=".xlsx" name="siswa_baru_list" required>
+                <label class="custom-file-label" for="customFile" >Pilih dokumen..</label>
+            </div>
+        </div>
+    </div>
+    <!--  -->
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <input type="hidden" name="kelas" value="{{kelas}}">
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px">Unggah</button>
+            </div>
+        </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-top: 20px;">
+        <div class="col-4">
+            {% if msg == "no data" %}
+            <div class="alert alert-danger" role="alert">
+                Data tidak ditemukan
+            </div>
+            {% elif msg == "format file salah" %}
+            <div class="alert alert-danger" role="alert">
+                Format file salah
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</form>
+
+    <script>
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+          var fileName = $(this).val().split("\\").pop();
+          $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+
+{% endblock %}

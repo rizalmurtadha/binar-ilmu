@@ -28,9 +28,15 @@
                     <td style="width: 2%;">
                         <h6><b>:</b></h6>
                     </td>
+                    {% if tingkat == "SMP" %}
                     <td style="width: 32%;">
                         <h6><b>SMP Binar Ilmu</b></h6>
                     </td>
+                    {% elif tingkat == "SMA" %}
+                    <td style="width: 32%;">
+                        <h6><b>SMA Binar Ilmu</b></h6>
+                    </td>
+                    {% endif %}
 
                     <td style="width: 23%;">
                         <h6><b>Nama Peserta Didik</b></h6>
@@ -66,6 +72,12 @@
                             <h6><b>{{kelas}} (Delapan)</b></h6>
                         {% elif kelas == "IX" :%}
                             <h6><b>{{kelas}} (Sembilan)</b></h6>
+                        {% elif kelas == "X" :%}
+                            <h6><b>{{kelas}} (Sepuluh)</b></h6>
+                        {% elif kelas == "XI" :%}
+                            <h6><b>{{kelas}} (Sebelas)</b></h6>
+                        {% elif kelas == "XII" :%}
+                            <h6><b>{{kelas}} (Dua belas)</b></h6>
                         {% endif %}
                     </td>
                 </tr>

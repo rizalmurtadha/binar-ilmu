@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Sistem Nilai Binar Ilmu{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('data_guru_new')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        {% if edit == 0 %}
+        <h4>Lihat Data Guru</h4>
+        {% else %}
+        <h4>Edit Data Guru</h4>
+        {% endif %}
+    </div>
+
+<div class="container">
+    <!--  -->
+        <div class="row justify-content-center">
+        <table class="table table-striped" style="width: 600px">
+            <thead>
+                <tr>
+                    <th style="width: 10%; text-align: center;">No.</th>
+                    <th style="width: 40%; text-align: center;">ID Guru</th>
+                    <th style="width: 50%; text-align: center;">Nama</th>
+                </tr>
+            </thead>
+            <tbody>
+                <form action="{{ url_for('lihat_data_guru') }}" method="POST">
+                {% for i in range(data_len) %}
+                <tr>
+                    <td style="text-align: center;">{{i+1}}</td>
+                    <td style="text-align: center;">{{id_guru_list[i]}}</td>
+                    {% if edit == 0%}
+                    <td style="text-align: left;">{{nama_guru_list[i]}}</td>
+                    {% else %}
+                    <td style="text-align: left;"><input type="text" size="40" name="nama_guru" value="{{nama_guru_list[i]}}"></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>  
+        </table>
+    </div>
+    <!--  -->
+    {% if edit == 1%}
+    <div class="row justify-content-end" style="margin-bottom: 20px;">
+        <div class="col-4">
+            <button class="btn btn-outline-primary" type="submit" name="edit" value="0"
+                    onclick="document.getElementById('hid_button').click()">
+              Edit Data
+            </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    <!--  -->
+    </div>
+
+{% endblock %}

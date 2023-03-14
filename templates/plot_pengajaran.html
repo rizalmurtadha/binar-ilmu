@@ -11,6 +11,11 @@
             <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
         </div>
     </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Plotting Guru Mata Pelajaran</h4>
+    </div>
+    <!--  -->
     &nbsp;
     <div class="container" style="margin-bottom: 50px;">
         <form action="{{ url_for('plot_pengajaran') }}" id="my-form" method="POST" enctype=multipart/form-data >
@@ -31,33 +36,45 @@
                         </td>
                         
                         <td style="max-height: 10px; padding: 4px;width: 25%;text-align: left;">
-                            <!-- <p>{{list_kelasVII[i]}}</p> -->
-                            <input list="list_guru" type="text" style="min-width: 250px;" class="dropdwn" name="list_kelasVII[]" id="list_kelasVII[]" value="{{list_kelasVII[i]}}"> 
-                            <datalist id="list_guru">
-                                {% for i in range(jlh_guru): %}
-                                <option value="{{list_guru[i]}}"></option>
+                            <div class="input-group" style="width: 300px">
+                            <select class="custom-select" required name="list_kelasVII[]">
+                                {% for j in range(jlh_guru)%}
+                                {% if list_guru[j] == list_kelasVII[i] %}
+                                <option value="{{list_guru[j]}}" selected>{{list_guru[j]}}</option>
+                                {% else %}
+                                <option value="{{list_guru[j]}}">{{list_guru[j]}}</option>
+                                {% endif %}
                                 {% endfor %}
-                            </datalist>
+                            </select>
+                            </div>
                         </td>
                         
                         <td style="max-height: 10px; padding: 4px;width: 25%;text-align: left;">
-                            <!-- <p>{{list_kelasVIII[i]}}</p> -->
-                            <input list="list_guru" type="text" style="min-width: 250px;" class="dropdwn" name="list_kelasVIII[]" id="list_kelasVIII[]" value="{{list_kelasVIII[i]}}"> 
-                            <datalist id="list_guru">
-                                {% for i in range(jlh_guru): %}
-                                <option value="{{list_guru[i]}}"></option>
+                            <div class="input-group" style="width: 300px">
+                            <select class="custom-select" required name="list_kelasVIII[]">
+                                {% for j in range(jlh_guru)%}
+                                {% if list_guru[j] == list_kelasVII[i] %}
+                                <option value="{{list_guru[j]}}" selected>{{list_guru[j]}}</option>
+                                {% else %}
+                                <option value="{{list_guru[j]}}">{{list_guru[j]}}</option>
+                                {% endif %}
                                 {% endfor %}
-                            </datalist>
+                            </select>
+                            </div>
                         </td>
                         
                         <td style="max-height: 10px; padding: 4px;width: 25%;text-align: left;">
-                            <!-- <p>{{list_kelasIX[i]}}</p> -->
-                            <input list="list_guru" type="text" style="min-width: 250px;" class="dropdwn" name="list_kelasIX[]" id="list_kelasIX[]" value="{{list_kelasIX[i]}}"> 
-                            <datalist id="list_guru">
-                                {% for i in range(jlh_guru): %}
-                                <option value="{{list_guru[i]}}"></option>
+                            <div class="input-group" style="width: 300px">
+                            <select class="custom-select" required name="list_kelasIX[]">
+                                {% for j in range(jlh_guru)%}
+                                {% if list_guru[j] == list_kelasVII[i] %}
+                                <option value="{{list_guru[j]}}" selected>{{list_guru[j]}}</option>
+                                {% else %}
+                                <option value="{{list_guru[j]}}">{{list_guru[j]}}</option>
+                                {% endif %}
                                 {% endfor %}
-                            </datalist>
+                            </select>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

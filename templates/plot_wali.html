@@ -11,10 +11,17 @@
             <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
         </div>
     </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Plotting Wali Kelas</h4>
+    </div>
+    <!--  -->
+
     &nbsp;
     <div class="container" style="margin-bottom: 50px;">
+        <div class="row justify-content-center">
         <form action="{{ url_for('plot_wali') }}" id="my-form" method="POST" enctype=multipart/form-data >
-        <table class="table" id="table">
+        <table class="table table-striped" style="width: 400px">
             <thead>
                 <tr>
                     <th style="width: 50%;">Kelas</th>
@@ -28,19 +35,25 @@
                             <p>{{list_kelas[i]}}</p>
                         </td>
                         
-                        <td style="max-height: 10px; padding: 4px;width: 50%;text-align: center;">
-                            <input list="list_guru" type="text" style="min-width: 250px;" class="dropdwn" name="list_wali[]" id="list_wali[]" value="{{list_wali[i]}}"> 
-                            <datalist id="list_guru">
-                                {% for i in range(jlh_guru): %}
-                                <option value="{{list_guru[i]}}"></option>
+                        <td style="max-height: 10px; padding: 4px;width: 25%;text-align: center;">
+                            <div class="input-group" style="width: 300px">
+                            <select class="custom-select" required name="list_wali[]">
+                                {% for j in range(jlh_guru)%}
+                                {% if list_guru[j] == list_wali[i] %}
+                                <option value="{{list_guru[j]}}" selected>{{list_guru[j]}}</option>
+                                {% else %}
+                                <option value="{{list_guru[j]}}">{{list_guru[j]}}</option>
+                                {% endif %}
                                 {% endfor %}
-                            </datalist>
+                            </select>
+                            </div>
                         </td>
                         
                     </tr>
                     {% endfor %}
                 </tbody>           
         </table>   
+        </div>
         &nbsp;
         <div class="container d-flex justify-content-end">
             <div class="row">
@@ -52,9 +65,9 @@
     <script>
 
 
-        $('.dropdwn').on('click', function() {
-            $(this).val('');
-        });
+        // $('.dropdwn').on('click', function() {
+        //     $(this).val('');
+        // });
         // $('#kelas_siswa').on('mouseleave', function() {
         //     if ($(this).val() == '') {
         //         $(this).val('{{kelas_siswa}}');

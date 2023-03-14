@@ -2,7 +2,23 @@
 {% block title %}Rekap{% endblock %}
 {% block content %}
     <!-- <br><br><br><br> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('role')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+
+    <!--  -->
     <div class="container" style="margin-bottom: 50px;">
+        <!--  -->
+        <div class="row justify-content-center">
+            <h5>Rekap Data Mata Pelajaran {{pelajaran}}</h5> 
+        </div>
+        <!--  -->
+        <div class="row justify-content-center" style="margin-bottom: 20px;">
+            <h5>Kelas {{kelas}}</h5> <br>
+        </div>
+        <!--  -->
         <table class="table" id="table">
             <thead>
                 <tr>

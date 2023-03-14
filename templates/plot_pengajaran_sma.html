@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Plotting Pengajaran{% endblock %}
+{% block content %}
+    <!-- <div class="container">
+        <div class="row">
+            <h3>Login Sebagai</h3>
+        </div>
+    </div> -->
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    <div class="container">
+    <!--  -->
+    <form action="{{ url_for('plot_pengajaran_sma') }}" id="my-form" method="POST" enctype=multipart/form-data >
+    {% if from_update_mapel == 0%}
+  <div class="row justify-content-center">
+    <div class="col-5">
+        <div class="input-group" style="width: 500px">
+      
+          <select class="custom-select" required name="pilih_kelas" style="width: 300px">
+            {% for i in range(3)%}
+            {% if i+10 == kelas %}
+            <option value="{{i+10}}" selected>Kelas {{list_kelas_rom[i]}}</option>
+            {% else %}
+            <option value="{{i+10}}">Kelas {{list_kelas_rom[i]}}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+            <button class="btn btn-outline-secondary" type="submit">
+              Tampilkan
+            </button>
+        </div>
+    </div>
+  </div>
+
+    {% endif %}
+    {% if from_update_mapel == 1%}
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Plotting Guru Mata Pelajaran Kelas {{kelas_rom}}</h4>
+    </div>
+    {% endif %}
+    <!--  -->
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <!-- alert -->
+      {% if(msg == "success"): %}
+      <div class="alert alert-success" role="alert">
+        Plotting guru mata pelajaran berhasil
+      </div>
+      {% endif %}
+    </div>
+  </div>
+    <!--  -->
+    &nbsp;
+    <div class="container" style="margin-bottom: 50px;">
+        <div class="row justify-content-center">
+        <table class="table table-striped" style="width: 600px">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Mata pelajaran</th>
+                    <th style="width: 50%;">Guru</th>
+                </tr>
+            </thead>
+                <tbody>
+                    {% for i in range(len_mapel): %}
+                    <tr>
+                        <td style="max-height: 10px; padding: 4px;text-align: left;">
+                            <p>{{list_mapel[i]}}</p>
+                        </td>
+                        
+                        <td style="max-height: 10px; padding: 4px;text-align: center;">
+                            <div class="input-group">
+                            <select class="custom-select" required name="sel_list_guru">
+                                {% for j in range(len_guru)%}
+                                {% if list_guru[j] == def_guru[i] %}
+                                <option value="{{list_guru[j]}}" selected>{{list_guru[j]}}</option>
+                                {% else %}
+                                <option value="{{list_guru[j]}}">{{list_guru[j]}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>           
+        </table>   
+        </div>
+        &nbsp;
+        <div class="container d-flex justify-content-end">
+            <div class="row">
+                <button type="submit" class="btn btn-outline-primary btn-lg" id="submit" style="min-width: 200px;"
+                        name="submit" value="1" >Submit</button>
+            </div>
+        </div>
+        </form>
+    </div>
+    <script>
+
+
+        // $('.dropdwn').on('click', function() {
+        //     $(this).val('');
+        // });
+        // $('#kelas_siswa').on('mouseleave', function() {
+        //     if ($(this).val() == '') {
+        //         $(this).val('{{kelas_siswa}}');
+        //     }
+        // });
+    </script>
+    
+{% endblock %}

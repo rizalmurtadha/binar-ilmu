@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Sistem Input Nilai Binar Ilmu{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('data_guru_new')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Hapus Guru</h4>
+    </div>
+
+<div class="container">
+<form action="{{ url_for('hapus_guru') }}" method="POST">
+<!--  -->
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <p>Silahkan pilih nama guru</p>
+        </div>            
+    </div>
+<!--  -->
+<div class="row justify-content-center">
+    <div class="col-4">
+    <select class="custom-select" required name="sel_guru" id="sel_guru">
+        {% for j in range(len_guru)%}
+        <option value="{{list_guru[j]}}">{{list_guru[j]}}</option>
+        {% endfor %}
+    </select>
+
+    </div>
+</div>
+    <!--  -->
+    <div class="row justify-content-center">
+        <div class="col-4">
+        <button type="button" class="btn btn-primary" style="margin-top: 20px" 
+                data-toggle="modal" data-target="#exampleModal" id="hapus">
+            Hapus
+        </button>
+        </div>
+    </div>
+<!--  -->
+<!--  -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Hapus Guru</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6 id="modal_content"></h6>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" style="width: 80px;">Ya</button>
+        <button type="button" class="btn btn-secondary" style="width: 80px;" data-dismiss="modal">Tidak</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<!--  -->
+</div>
+
+
+<script type="text/javascript">
+    $("#hapus").click(function () {
+        var sel_guru = $("#sel_guru").val();
+        var str = "Apakah anda yakin untuk menghapus " 
+            + sel_guru
+            + " dari database?";
+        $("#modal_content").html(str);
+    });
+</script>
+
+{% endblock %}

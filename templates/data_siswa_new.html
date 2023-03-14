@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Menu Data Siswa</h4>
+    </div>
+<div class="container">
+    <form action="{{url_for('data_siswa_new') }}" method="POST">
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="lihat_data_siswa">Lihat Data Siswa</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="edit_data_siswa">Edit Data Siswa</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="tambah_siswa_baru">Tambah Siswa Awal Tahun</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="mutasi_masuk">Mutasi Masuk</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="mutasi_keluar">Mutasi Keluar</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="lihat_daftar_mutasi">Lihat Daftar Mutasi</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="update_naik">Update Naik/Lulus</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="lihat_alumni">Lihat Daftar Alumni</button>
+    </div>
+    <!--  -->   
+    </form>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-top: 20px;">
+        <div class="col-4">
+            {% if msg == "tambah siswa baru" %}
+            <div class="alert alert-success" role="alert">
+                Data siswa baru sudah ditambahkan
+            </div>
+            {% elif msg == "mutasi keluar" %}
+            <div class="alert alert-success" role="alert">
+                Update mutasi keluar berhasil
+            </div>
+            {% elif msg == "kenaikan" %}
+            <div class="alert alert-success" role="alert">
+                Update kenaikan kelas/kelulusan berhasil
+            </div>
+            {% elif msg == "belum ada alumni" %}
+            <div class="alert alert-danger" role="alert">
+                Belum ada alumni
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+    
+    
+{% endblock %}

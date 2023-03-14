@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('data_guru_new')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Reset Password</h4>
+    </div>
+
+<div class="container" style="margin-bottom: 50px;">
+<form action="{{ url_for('reset_passwd') }}" method="POST" enctype=multipart/form-data>
+<!--  -->
+    <div class="row justify-content-center">
+        <div class="col-4">
+            Pilih guru
+        </div>
+    </div>
+<!--  -->
+    <div class="row justify-content-center" style="margin-top: 10px; margin-bottom: 10px">
+        <div class="col-4">
+        <div class="input-group" style="width: 400px">
+          <select class="custom-select" required name="id_guru">
+            {% for i in range(data_len)%}
+            <option value="{{list_id[i]}}">{{list_guru[i]}}</option>
+            {% endfor %}
+          </select>
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="submit">
+              Reset Password
+            </button>
+          </div>
+        </div>
+        </div>
+    </div>
+<!--  -->
+</form>
+<!--  -->
+</div>
+
+{% endblock %}

@@ -8,14 +8,95 @@
         </div>
     </div>
     &nbsp;
-    <div class="container d-flex" style="margin-bottom: 50px;">
+    <div class="row justify-content-center" style="margin-bottom: 20px">
+        <h4>Tambah Data Siswa Kelas {{kelas}}</h4>
+    </div>
+
+
+    <div class="container" style="margin-bottom: 50px;">
+        <div class="row" style="width: 80%;">
+            <h5>Metode 1: Single Entry</h5>
+        </div>
+        <form action="{{ url_for('data_siswa') }}" method="POST" enctype=multipart/form-data>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <p>Silahkan isi nama siswa baru</p>
+            </div>            
+        </div>
+        <!--  -->
+        <div class="row justify-content-center">
+            <div class="col-4">
+            <input type="hidden" name="kelas" value="{{kelas}}">
+            <input type="text" class="form-control" name="siswa_baru">
+            </div>
+        </div>
+        <!--  -->
+        <!--  -->
+        <div class="row justify-content-center">
+            <div class="col-4">
+            <button type="submit" class="btn btn-primary" style="margin-top: 20px" name="single_entry" value="1">
+                Submit
+            </button>
+            </div>
+        </div>
+    <!--  -->
+        <div class="row" style="margin-top: 50px;">
+            <h5>Metode 2: Bulk Upload</h5>
+        </div>
+        <div class="row justify-content-center" style="margin-bottom: 20px;">
+            <div class="col-4">
+                <a href="{{ url_for('download_files',filename='template.xlsx') }}">
+                    Unduh template</a>
+            </div>
+        </div>
+        <!--  -->
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <p>Unggah daftar siswa baru</p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+        <div class="col-4">
+            <input
+            type="file"
+            accept=".xlsx"
+            class="form-control-file"
+            name="siswa_baru_list"
+          />
+        </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <input type="hidden" name="kelas" value="{{kelas}}">
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px" name="bulk_upload" value="1">Unggah</button>
+            </div>
+        </div>
+    </div>
+    </form>    
+
+    <!-- <h5>Metode 1: Single Entry</h5>
+    <div class="row justify-content-center" style="width: 80%;">
+    <p>Silahkan isi nama siswa baru</p>
+    </div>
+
+    <div class="row justify-content-center" style="width: 80%;">
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group row" width="1000px">
+                <input type="text" class="form-control" id="id_guru" name="id_guru">
+            </div>
+    </form>
+    </div> -->
+
+    
+
+    <!-- <div class="container d-flex" style="margin-bottom: 50px;">
         <div class="row d-flex" style="width: 100%; align-items: center; ">
             <div class="col-3"></div>
             <div class="col-4">
                 <h4>Unduh template data siswa</h4>
             </div>
             <div class="col-2">
-                <a href="{{ url_for('download_template_data_siswa')}}"  class="btn btn-primary btn-md" style="width: 150px;" >Unduh template</a>
+                <a href="{{ url_for('download_from_directory', source='data', filename='data_siswa_template.xlsx')}}"  class="btn btn-primary btn-md" style="width: 150px;" >Unduh template</a>
             </div>
         </div>
     </div>
@@ -48,5 +129,5 @@
           var fileName = $(this).val().split("\\").pop();
           $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
         });
-    </script>
+    </script> -->
 {% endblock %}

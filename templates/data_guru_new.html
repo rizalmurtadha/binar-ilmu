@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('admin')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Menu Data Guru</h4>
+    </div>
+<div class="container" style="margin-bottom: 50px;">
+    <form action="{{url_for('data_guru_new') }}" method="POST">
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="lihat_data_guru">Lihat Data Guru</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="edit_data_guru">Edit Data Guru</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="tambah_guru_new">Tambah Guru</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="hapus_guru">Hapus Guru</button>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <button type="submit" style="width: 300px;" class="btn btn-outline-primary btn-lg" name="pilihan" value="reset_passwd">Reset Password</button>
+    </div>
+    <!--  -->   
+    </form>
+    <!--  -->
+    <div class="row justify-content-center" style="margin-top: 20px;">
+        <div class="col-4">
+            {% if msg == "guru baru" %}
+            <div class="alert alert-success" role="alert">
+                Data guru baru sudah ditambahkan
+            </div>
+            {% elif msg == "reset passwd" %} 
+            <div class="alert alert-success" role="alert">
+                Reset password berhasil
+            </div>
+            {% elif msg == "hapus guru" %} 
+            <div class="alert alert-success" role="alert">
+                Hapus guru berhasil
+            </div>
+            <!-- {% elif msg == "kenaikan" %}
+            <div class="alert alert-success" role="alert">
+                Update kenaikan kelas/kelulusan berhasil
+            </div> -->
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+    
+    
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('data_siswa_new')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        {% if edit == 0 %}
+        <h4>Lihat Data Siswa</h4>
+        {% else %}
+        <h4>Edit Data Siswa</h4>
+        {% endif %}
+    </div>
+
+<div class="container">
+<form action="{{ url_for('lihat_data_siswa') }}" method="POST">
+    <div class="row justify-content-center">
+        <div class="col-4">
+            Pilih kelas
+        </div>
+    </div>
+    <div class="row justify-content-center" style="margin-top: 10px; margin-bottom: 10px">
+        <div class="col-4">
+        <div class="input-group" style="width: 300px">
+            <select id="class-select" class="custom-select" required name="pilih_kelas">
+          <!-- <select id="class-select" class="custom-select" required name="pilih_kelas" onchange="classSelectHandler()"> -->
+            {% if tingkat == "SMP" %}
+                {% for i in range(3)%}
+                {% if (i+7) == kelas %}
+                <option value="{{i+7}}" selected>Kelas {{list_kelas_rom[i]}}</option>
+                {% else %}
+                <option value="{{i+7}}">Kelas {{list_kelas_rom[i]}}</option>
+                {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for i in range(3)%}
+                {% if (i+10) == kelas %}
+                <option value="{{i+10}}" selected>Kelas {{list_kelas_rom[i]}}</option>
+                {% else %}
+                <option value="{{i+10}}">Kelas {{list_kelas_rom[i]}}</option>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+          </select>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">
+              Tampilkan
+            </button>
+          </div>
+        </div>
+        </div>
+    </div>
+    <!--  -->
+        <div class="row justify-content-center">
+        <table class="table table-striped" style="width: 600px">
+            <thead>
+                <tr>
+                    <th style="width: 10%; text-align: center;">No.</th>
+                    <th style="width: 30%; text-align: left;">Nama</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(data_len) %}
+                <tr>
+                    <td style="text-align: center;">{{i+1}}</td>
+                    {% if edit == 0%}
+                    <td style="width: 30%; text-align: left;">{{nama_list[i]}}</td>
+                    {% else %}
+                    <td style="width: 300px;"><input type="text" size="40" name="nama_siswa" value="{{nama_list[i]}}"></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>  
+        </table>
+    </div>
+    <!--  -->
+    {% if edit == 1%}
+    <div class="row justify-content-end" style="margin-bottom: 20px;">
+        <div class="col-4">
+            <button class="btn btn-outline-primary" type="submit" name="edit" value="0">
+              Edit Data
+            </button>
+        </div>
+    </div>
+    {% endif %}
+    </div>
+    </form>
+    <!-- <script>
+        function classSelectHandler (e){
+        var x = document.getElementById("class-select").value;
+        location.href = Flask.url_for('lihat_data_siswa', {pilih_kelas:x});
+        }
+    </script> -->
+{% endblock %}

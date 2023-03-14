@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Data Siswa{% endblock %}
+{% block content %}
+    <div class="container d-flex justify-content-end" >
+        <div>
+            <a href="{{ url_for('data_siswa_new')}}"  class="btn btn-outline-primary btn-md" style="width: 150px;" >Kembali</a>
+        </div>
+    </div>
+    &nbsp;
+    <div class="row justify-content-center" style="margin-bottom: 20px;">
+        <h4>Mutasi Masuk</h4>
+    </div>
+
+<div class="container">
+<form action="{{ url_for('mutasi_masuk') }}" method="POST" enctype=multipart/form-data>
+<!--  -->
+    <div class="row justify-content-center">
+        <div class="col-4">
+            Pilih kelas
+        </div>
+    </div>
+<!--  -->
+    <div class="row justify-content-center" style="margin-top: 10px; margin-bottom: 10px">
+        <div class="col-4">
+        <div class="input-group" style="width: 300px">
+          <select class="custom-select" required name="pilih_kelas">
+            {% if tingkat == "SMP" %}
+            {% for i in range(3)%}
+            <option value="{{i+7}}">Kelas {{list_kelas_rom[i]}}</option>
+            {% endfor %}
+            {% else %}
+            {% for i in range(3)%}
+            <option value="{{i+10}}">Kelas {{list_kelas_rom[i]}}</option>
+            {% endfor %}
+            {% endif %}
+          </select>
+        </div>
+        </div>
+    </div>
+<!--  -->
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <p>Silahkan isi nama siswa baru</p>
+        </div>            
+    </div>
+<!--  -->
+    <div class="row justify-content-center">
+        <div class="col-4">
+        <input type="text" class="form-control" name="siswa_baru" required>
+        </div>
+    </div>
+    <!--  -->
+    <div class="row justify-content-center">
+        <div class="col-4">
+        <button type="submit" class="btn btn-primary" style="margin-top: 20px">
+            Submit
+        </button>
+        </div>
+    </div>
+<!--  -->
+</form>
+<!--  -->
+</div>
+
+{% endblock %}
